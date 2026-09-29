@@ -3,10 +3,10 @@ AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: '38019058-7bf9-4f26-a29f-cd1c6fd02e5a'
-  PropagateID: '38019058-7bf9-4f26-a29f-cd1c6fd02e5a'
-  ReservedCode1: 'e8251cd1-95ab-43de-99f5-9e3a004ceded'
-  ReservedCode2: 'e8251cd1-95ab-43de-99f5-9e3a004ceded'
+  ProduceID: '85940041-a441-40d1-ad2f-54316284df22'
+  PropagateID: '85940041-a441-40d1-ad2f-54316284df22'
+  ReservedCode1: '7e77183e-c074-4a67-9963-1f58ff3eba86'
+  ReservedCode2: '7e77183e-c074-4a67-9963-1f58ff3eba86'
 ---
 
 # CrushExam 1.7.0 ·
@@ -208,7 +208,7 @@ python coach.py doctor                  # 环境自检
 
 - 单测使用隔离临时目录与考试注册表，不触碰真实学习进度
 - `test_cli_flow` 以独立子进程跑完整用户旅程；已在 Windows 上修复 `USERPROFILE` 隔离（v1.7 原版仅设 `HOME`，Windows 下会读到真实注册表）
-- 合并保留了上游纯函数测试（chapters/extract/figures/index/questions/text/usage_log），合计 176 项
+- 合并保留了纯函数测试（chapters/extract/figures/index/questions/text/usage_log），合计 176 项
 - 实际验证记录（合成旅程、浏览器检查）见 `validation/RELEASE_VALIDATION.md`——合成测试不作为真人提分证据
 
 ## 边界声明

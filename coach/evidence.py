@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Evidence levels and spaced review scheduling.
 
-Evidence levels (borrowed from ko-lesson mastery levels, adapted to 5):
+Evidence levels (five, from untested to transfer):
   untested  — never attempted
   hinted    — answered correctly but had seen teaching/hints first
   immediate — answered correctly without hints, same session

@@ -16,7 +16,7 @@ from .workspace_lock import locked
 
 REGISTRY_DIR = os.path.join(os.path.expanduser("~"), ".crushexam")
 REGISTRY_FILE = os.path.join(REGISTRY_DIR, "exam_registry.json")
-# Keep backward compat with the old ECC Flash pointer
+# Keep backward compat with the legacy pointer from earlier releases
 OLD_POINTER = os.path.join(os.path.expanduser("~"), ".exam-cram-coach", "last_workspace")
 
 EXAM_TYPES = ("final", "certification", "skill", "midterm")
@@ -217,7 +217,7 @@ def remove(exam_id):
 
 
 def migrate_old_pointer():
-    """If the old ECC Flash pointer exists but the registry is empty, try to import it."""
+    """If the legacy pointer from earlier releases exists but the registry is empty, try to import it."""
     reg = _read_registry()
     if reg["exams"]:
         return None

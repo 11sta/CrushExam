@@ -6,15 +6,14 @@ name_cn: 循证备考教练
 description_cn: 基于课程资料先诊断、看缺口、制定简洁任务，再进行先答后查与跨日复习。
 metadata:
   version: "1.7.0"
-  based_on: "Exam Cram Coach Flash v5.1 (MIT, https://github.com/ZeKaiNie/universal-examprep-skill)"
 AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: '0aa9a67e-b5b4-4187-ae7d-7dfd4b005134'
-  PropagateID: '0aa9a67e-b5b4-4187-ae7d-7dfd4b005134'
-  ReservedCode1: '1ac7bf35-c56e-4da6-8893-a0bf43325951'
-  ReservedCode2: '1ac7bf35-c56e-4da6-8893-a0bf43325951'
+  ProduceID: '7a3cf84b-c068-453a-916c-151161dd21f0'
+  PropagateID: '7a3cf84b-c068-453a-916c-151161dd21f0'
+  ReservedCode1: 'e5559c95-0dfa-40be-ab50-47887c478ee3'
+  ReservedCode2: 'e5559c95-0dfa-40be-ab50-47887c478ee3'
 ---
 
 # CrushExam 1.7 
