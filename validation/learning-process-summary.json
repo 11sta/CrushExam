@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "commands": 28,
+  "checks": 5,
+  "synthetic_only": true,
+  "real_learning_effect_test": false,
+  "platform_live_test": false
+}

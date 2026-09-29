@@ -1,0 +1,16 @@
+{
+  "structure": {
+    "source": "待核对：请填写老师、考纲或试卷的真实出处",
+    "confirmed": false,
+    "sections": []
+  },
+  "kcs": [
+    {
+      "id": "module-1",
+      "chapter": null,
+      "title": "待填写：真实知识点名称",
+      "keywords": [],
+      "source": "待填写：资料文件及页码"
+    }
+  ]
+}

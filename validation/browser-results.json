@@ -1,0 +1,78 @@
+{
+  "render_transport": "set-content",
+  "not_tested": [
+    "Native file/HTTP navigation and localStorage persistence across page reload (container browser policy blocks URL navigation)."
+  ],
+  "synthetic_only": true,
+  "live_platform": false,
+  "checks": [
+    {
+      "name": "no_reference_key_before_submit",
+      "passed": true
+    },
+    {
+      "name": "desktop_no_horizontal_document_overflow",
+      "passed": true
+    },
+    {
+      "name": "raw_answer_has_accessible_label",
+      "passed": true
+    },
+    {
+      "name": "option_selects_response",
+      "passed": true
+    },
+    {
+      "name": "receipt_binds_exact_attempt",
+      "passed": true
+    },
+    {
+      "name": "submit_freezes_controls",
+      "passed": true
+    },
+    {
+      "name": "storage_unavailable_is_explicit",
+      "passed": true
+    },
+    {
+      "name": "repeat_export_is_identical",
+      "passed": true
+    },
+    {
+      "name": "backend_import_and_grade_exactly_once",
+      "passed": true
+    },
+    {
+      "name": "feedback_after_backend_grade",
+      "passed": true
+    },
+    {
+      "name": "feedback_hides_answer_entry_and_options",
+      "passed": true
+    },
+    {
+      "name": "mobile_no_horizontal_document_overflow",
+      "passed": true
+    },
+    {
+      "name": "mobile_question_is_prioritized",
+      "passed": true
+    },
+    {
+      "name": "mobile_buttons_have_no_overflow",
+      "passed": true
+    },
+    {
+      "name": "no_javascript_errors",
+      "passed": true
+    },
+    {
+      "name": "no_remote_requests",
+      "passed": true
+    }
+  ],
+  "console_errors": [],
+  "network_requests": [],
+  "browser_version": "144.0.7559.96",
+  "passed": true
+}

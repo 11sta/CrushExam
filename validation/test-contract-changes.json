@@ -1,0 +1,13 @@
+{
+  "original_test_functions": 90,
+  "current_test_functions": 132,
+  "new": 42,
+  "removed": [],
+  "modified_original": [
+    [
+      "test_reliability_v160.py",
+      "TeachingAndMigrationTests",
+      "test_teach_guide_independent_feedback_and_session_finish"
+    ]
+  ]
+}

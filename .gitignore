@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# Packaging artifacts
+*.zip
+
+# Development-only (not part of the skill)
+samples/
+validation/screenshots/
+
+# OS noise
+Thumbs.db
+.DS_Store
+
+# Local working data (never upload user study data)
+exam-cram/
+*.tool-usage-log.json

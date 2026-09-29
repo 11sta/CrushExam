@@ -1,0 +1,328 @@
+[
+  {
+    "command": [
+      "setup",
+      "/mnt/data/crush_validation/unpacked-contracts-v170/synthetic-materials",
+      "--exam",
+      "learning-release",
+      "--lang",
+      "zh",
+      "--days",
+      "7",
+      "--minutes",
+      "45"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "✅ 工作区已建好: /mnt/data/crush_validation/unpacked-contracts-v170/synthetic-materials/exam-cram  (0.0s)\n文件: homework×3, lecture×3\n章节 (3):\n   1. 栈  [lecture1.txt; 3 题目]\n   2. 队列  [lecture2.txt; 3 题目]\n   3. 二叉树  [lecture3.txt; 3 题目]\n题目: 9 (9 有参考答案)\n配图: 0 + 0 question/answer crops\n资料 | 类型(自动归类) | 提取状态 | 用途/待核对\n--- | --- | --- | ---\nhw1.txt | homework | 可提取 | 基础原题\nhw2.txt | homework | 可提取 | 基础原题\nhw3.txt | homework | 可提取 | 基础原题\nlecture1.txt | lecture | 可提取 | 理解概念/例题\nlecture2.txt | lecture | 可提取 | 理解概念/例题\nlecture3.txt | lecture | 可提取 | 理解概念/例题\n文件 | 内容 | 用途\n--- | --- | ---\n/mnt/data/crush_validation/unpacked-contracts-v170/synthetic-materials/exam-cram/source_manifest.md | 全量资料来源、提取状态及待核对点 | 确认考试重点与遗漏材料\n下一步: python coach.py quiz --stratified -n 6  （入口必经：先小规模分层诊断 → gaps → plan，再开始讲课，不要直接 next）\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "plan",
+      "--skip-diagnosis"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "已跳过本轮剩余摸底；已提交原答保留，未测仍是未测。\n=== 今日计划｜先补关键缺口 ===\n考试日期：未填写；只使用确认范围与分值，不估计个人通过概率。\n当前任务：栈\n步骤：定位并补讲｜预算 25 分钟\n完成依据：完成一次未见原题独立验证；选项与方法证据分别记录\n原因：尚未摸底；考试对应分值未知；基于本章 0 道已测题\n依据：尚未摸底；考试对应分值未知；基于本章 0 道已测题\n安排说明：ch1\n📍 今日任务 · 栈 · 有效作答 0 → python coach.py next\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "quiz",
+      "--qid",
+      "q_3e39ed19fba8ca23"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "=== 资料原题练习｜只做当前这一题 ===\n[q_3e39ed19fba8ca23] 第2章｜subjective｜hw2.txt p.1\n<<<MATERIAL 4f0c09d685f0b6c0\n简述循环队列判断空与满的方法，并解释保留空位。\nMATERIAL>>> 4f0c09d685f0b6c0\n作答编号：f83a80dc7c1f45da861b5129dd82c94c\n📍 今日任务 · 栈 · 有效作答 0 → python coach.py submit q_3e39ed19fba8ca23 \"<你的原答>\"\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "submit",
+      "q_3e39ed19fba8ca23",
+      "空时front=rear。"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "原答已冻结保存。下一步核对；修改不会覆盖这次提交。\n📍 今日任务 · 栈 · 有效作答 0 → python coach.py grade q_3e39ed19fba8ca23\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "grade",
+      "q_3e39ed19fba8ca23",
+      "--rubric",
+      "/mnt/data/crush_validation/unpacked-contracts-v170/legacy-incomplete-ratings.json"
+    ],
+    "exit": 3,
+    "expected_exit": 3,
+    "stdout": "评分点未完整核对或未在作答前冻结。保留分项反馈和原答，不判整题正确。可补全已冻结评分记录，或暂缓并为新作答先冻结契约。\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "skip",
+      "q_3e39ed19fba8ca23",
+      "--note",
+      "合成测试结束未核对原答，完整契约只供下一次作答。"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "已跳过：不记为答错、不产生掌握证据，原答如已提交仍保留。\n📍 今日任务 · 栈 · 有效作答 0 → python coach.py next\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "rubric",
+      "draft",
+      "q_3e39ed19fba8ca23",
+      "--out",
+      "/mnt/data/crush_validation/unpacked-contracts-v170/contract.json"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "评分契约草案已保存：/mnt/data/crush_validation/unpacked-contracts-v170/contract.json。先核对全部要点；它不是学生作答页面。\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "rubric",
+      "freeze",
+      "q_3e39ed19fba8ca23",
+      "--file",
+      "/mnt/data/crush_validation/unpacked-contracts-v170/contract.json"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "完整评分要求已冻结：a9da256ea3c7e335e28cd0f6268859bed2c344486ab78a64f7fa614b299940ee；只作用于未提交/后续作答。\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "quiz",
+      "--qid",
+      "q_3e39ed19fba8ca23"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "=== 资料原题练习｜只做当前这一题 ===\n[q_3e39ed19fba8ca23] 第2章｜subjective｜hw2.txt p.1\n<<<MATERIAL 532bc005a0390e53\n简述循环队列判断空与满的方法，并解释保留空位。\nMATERIAL>>> 532bc005a0390e53\n作答编号：07b126e13a3f47dea90bd7ee0565a82b\n📍 今日任务 · 栈 · 有效作答 0 → python coach.py submit q_3e39ed19fba8ca23 \"<你的原答>\"\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "submit",
+      "q_3e39ed19fba8ca23",
+      "空时front=rear，满时(rear+1)%M=front，保留空位用于区分空与满。"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "原答已冻结保存。下一步核对；修改不会覆盖这次提交。\n📍 今日任务 · 栈 · 有效作答 0 → python coach.py grade q_3e39ed19fba8ca23\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "rubric",
+      "ratings",
+      "q_3e39ed19fba8ca23",
+      "--out",
+      "/mnt/data/crush_validation/unpacked-contracts-v170/ratings.json"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "完整评分记录模板已生成；逐项引用首次原答，不得删掉未完成的要求。\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "grade",
+      "q_3e39ed19fba8ca23",
+      "--rubric",
+      "/mnt/data/crush_validation/unpacked-contracts-v170/ratings.json"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "正确｜即时独立\n原答：空时front=rear，满时(rear+1)%M=front，保留空位用于区分空与满。\n参考依据：hw2.txt p.1\n参考要点1：完成\n参考要点2：完成\n参考要点3：完成\n本题已收束。等待你决定继续、查看任务或结束本次，不自动开启下一题。\n📍 今日任务 · 栈 · 有效作答 1 · 等待你的下一步选择\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "goto",
+      "1",
+      "--restart"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "已切换到第1章：栈；后续 next/quiz 将执行同一任务。\n📍 学习与练习 · 栈 · 有效作答 1 → python coach.py next\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "next"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "当前任务：栈\n步骤：定位并补讲｜预算 25 分钟\n完成依据：完成一次未见原题独立验证；选项与方法证据分别记录\n原因：尚未摸底；考试对应分值未知；基于本章 0 道已测题\n<<<MATERIAL ab1733b3ec05899b\n[lecture1.txt p.1]\n第1章 栈\n栈遵循后进先出。入栈在栈顶添加元素，出栈删除栈顶元素。\n例：入栈1，入栈2，再出栈得到2，剩下1。\nMATERIAL>>> ab1733b3ec05899b\n教练只解释当前规则及其适用条件，先确认学生卡在哪一步；下一步用资料例题补步骤。\n📍 学习与练习 · 栈 · 有效作答 1 · 等待你的下一步选择\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "next"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "带做例题：只检查一个关键步骤，不能算作独立测试。\n[q_d972d360694ce746] 第1章｜choice｜hw1.txt p.1\n<<<MATERIAL a0a43a2c8ca7e6b7\n入栈1、2后出栈得到什么？\nA. 1\nB. 2\nMATERIAL>>> a0a43a2c8ca7e6b7\n--- 参考答案 ---\n🟢 (hw1.txt p.1)\n<<<MATERIAL ba0c9757a33e3b63\nB\nMATERIAL>>> ba0c9757a33e3b63\n教练先示范第一步，再让学生补下一步；等待学生回答。随后选另一道原题独立验证。\n📍 学习与练习 · 栈 · 有效作答 1 · 等待你的下一步选择\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "next"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "当前任务：栈\n步骤：等待你补一个步骤｜预算 25 分钟\n完成依据：完成一次未见原题独立验证；选项与方法证据分别记录\n原因：尚未摸底；考试对应分值未知；基于本章 0 道已测题\n等你补一个关键步骤；重复 next 不会跳过回应。实际回应由 task note 保存。\n📍 学习与练习 · 栈 · 有效作答 1 → python coach.py task note --note \"<学生实际补出的步骤>\"\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "task",
+      "note",
+      "--note",
+      "我还是不会，不知道出栈后剩下什么。"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "实际步骤已保存：6944d89cdb5e4a9589a4599c2de74802；待核对，不计独立成功。\n当前任务：栈\n步骤：核对刚才的步骤｜预算 25 分钟\n完成依据：完成一次未见原题独立验证；选项与方法证据分别记录\n原因：尚未摸底；考试对应分值未知；基于本章 0 道已测题\n📍 学习与练习 · 栈 · 有效作答 1 → python coach.py task assess --step-id 6944d89cdb5e4a9589a4599c2de74802 --verdict <met|partial|incorrect|uncertain> --quote \"<原话>\" --reference-quote \"<参考片段>\" --note \"<核对说明>\"\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "next"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "当前任务：栈\n步骤：核对刚才的步骤｜预算 25 分钟\n完成依据：完成一次未见原题独立验证；选项与方法证据分别记录\n原因：尚未摸底；考试对应分值未知；基于本章 0 道已测题\n步骤已保存，尚未核对。先 task assess；不会将“我还不会”或单纯继续当作通过。\n📍 学习与练习 · 栈 · 有效作答 1 → python coach.py task assess --step-id 6944d89cdb5e4a9589a4599c2de74802 --verdict <met|partial|incorrect|uncertain> --quote \"<原话>\" --reference-quote \"<参考片段>\" --note \"<核对说明>\"\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "task",
+      "assess",
+      "--step-id",
+      "6944d89cdb5e4a9589a4599c2de74802",
+      "--verdict",
+      "uncertain",
+      "--quote",
+      "我还是不会",
+      "--reference-quote",
+      "B",
+      "--note",
+      "需补一个更小步骤，当前不能确认。"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "步骤核对已保存。通过才进入独立练习；部分/错误/不确定先补小步骤。\n当前任务：栈\n步骤：补更小的前置步骤｜预算 25 分钟\n完成依据：完成一次未见原题独立验证；选项与方法证据分别记录\n原因：先补一个更小的前置步骤，不重复整段讲义。\n📍 学习与练习 · 栈 · 有效作答 1 → python coach.py next\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "next"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "先补更小的前置步骤，保留之前的真实困惑；不直接进入独立测试。\n带做例题：只检查一个关键步骤，不能算作独立测试。\n[q_d972d360694ce746] 第1章｜choice｜hw1.txt p.1\n<<<MATERIAL 9e8f7728fc709039\n入栈1、2后出栈得到什么？\nA. 1\nB. 2\nMATERIAL>>> 9e8f7728fc709039\n--- 参考答案 ---\n🟢 (hw1.txt p.1)\n<<<MATERIAL 24652974ac398683\nB\nMATERIAL>>> 24652974ac398683\n教练先示范第一步，再让学生补下一步；等待学生回答。随后选另一道原题独立验证。\n📍 学习与练习 · 栈 · 有效作答 1 · 等待你的下一步选择\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "task",
+      "skip-check",
+      "--note",
+      "合成学生明确希望先尝试另一题，保留困惑。"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "已明确暂缓当前核对；不把跳过记为步骤掌握。\n当前任务：栈\n步骤：独立做资料原题｜预算 25 分钟\n完成依据：完成一次未见原题独立验证；选项与方法证据分别记录\n原因：先补一个更小的前置步骤，不重复整段讲义。\n📍 学习与练习 · 栈 · 有效作答 1 → python coach.py next\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "quiz",
+      "--qid",
+      "q_14b5b6859b1fc62d"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "=== 资料原题练习｜只做当前这一题 ===\n[q_14b5b6859b1fc62d] 第1章｜choice｜hw1.txt p.1\n<<<MATERIAL 4090fe380684f37f\n栈的基本规则是什么？\nA. 先进先出\nB. 后进先出\nMATERIAL>>> 4090fe380684f37f\n作答编号：62dd0ef8290c4355af969110f3c19513\n📍 学习与练习 · 栈 · 有效作答 1 → python coach.py submit q_14b5b6859b1fc62d \"<你的原答>\"\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "submit",
+      "q_14b5b6859b1fc62d",
+      "B",
+      "--confidence",
+      "low"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "原答已冻结保存。下一步核对；修改不会覆盖这次提交。\n📍 学习与练习 · 栈 · 有效作答 1 → python coach.py grade q_14b5b6859b1fc62d\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "grade",
+      "q_14b5b6859b1fc62d"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "正确｜即时独立；选项得分保留，方法待核验\n原答：B\n参考依据：hw1.txt p.1\n参考答案：B\n本题已收束。等待你决定继续、查看任务或结束本次，不自动开启下一题。\n📍 学习与练习 · 栈 · 有效作答 2 · 等待你的下一步选择\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "gaps",
+      "--html"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "=== 知识点能力表｜按章暂代 ===\n已测 2 道；未测不是零分，单题答对也不能推算考试得分概率。\n没有 KC 词典，按章聚合（导入蓝图后可按知识点查看）\n模块 | 最近证据 | 已测/题库 | 说明\n--- | --- | --- | ---\n栈 | 选项得分保留，方法待核验 | 1/3 | 错/跳 0、独立对 0、未测 2\n二叉树 | 未测 | 0/3 | 错/跳 0、独立对 0、未测 3\n队列 | 独立作答样本（仍需补测） | 1/3 | 错/跳 0、独立对 1、未测 2\n文件 | 内容 | 用途\n--- | --- | ---\n/mnt/data/crush_validation/unpacked-contracts-v170/synthetic-materials/exam-cram/capability.html | 离线知识模块×题型热图、六模块概览及来源表 | 核对误标并确定先补模块（浏览器打开）\n📍 学习与练习 · 栈 · 有效作答 2 → python coach.py plan\n非判分记录：用户跳过 1\n这些记录不等于答错，不纳入正确率；首次原答与原因均可追溯。\n📍 学习与练习 · 栈 · 有效作答 2 → python coach.py task；核对首次理由或 task skip-check --note \"<明确暂缓原因>\"\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "workbench",
+      "--out",
+      "/mnt/data/crush_validation/unpacked-contracts-v170/pending-method-feedback.html"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "学习工作台：/mnt/data/crush_validation/unpacked-contracts-v170/pending-method-feedback.html\n页面一次显示一题，可填写、冻结并导出原答。将JSON交回教练，用 import-answer 导入后才更新进度。\n未提交题目的参考答案不写入页面；这是离线文件，不是已接通TeleAgent的实时前端。\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "task",
+      "finish",
+      "--status",
+      "needs_work",
+      "--note",
+      "本次结束，保留方法待核验。"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "任务已收束；没有将未完成项目标成掌握。\n本次暂无待执行任务。已结束不代表全部掌握，可查看总结或安排下一次。\n📍 学习与练习 · 有效作答 2 → python coach.py session finish\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "session",
+      "finish"
+    ],
+    "exit": 0,
+    "expected_exit": 0,
+    "stdout": "本次已结束；未完成任务与原答已保留。\n总结已保存：/mnt/data/crush_validation/unpacked-contracts-v170/synthetic-materials/exam-cram/session_summary.md\n📍 本次已结束 · 有效作答 2 → python coach.py session resume\n",
+    "stderr": ""
+  }
+]

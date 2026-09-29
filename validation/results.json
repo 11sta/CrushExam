@@ -1,0 +1,51 @@
+{
+  "release": "1.7.0",
+  "validation_date": "2026-09-29",
+  "baseline": "1.6.0",
+  "baseline_tests": 90,
+  "full_regression": 132,
+  "new_tests": 42,
+  "modified_original_tests": 1,
+  "removed_original_tests": 0,
+  "extracted_candidate_regression": {
+    "tests": 132,
+    "seconds": 52.295,
+    "passed": true
+  },
+  "independent_process_journey": {
+    "synthetic_only": true,
+    "platform_live_test": false,
+    "real_learning_effect_test": false,
+    "commands": 32,
+    "passed": true,
+    "diagnostic_submissions": 4,
+    "last_independent_result": "right",
+    "last_evidence": "immediate",
+    "python": "3.13.5",
+    "final_stage": "session_complete"
+  },
+  "independent_process_contract_checks": {
+    "passed": true,
+    "commands": 28,
+    "checks": 5,
+    "synthetic_only": true,
+    "real_learning_effect_test": false,
+    "platform_live_test": false
+  },
+  "browser": {
+    "checks": 16,
+    "passed": true,
+    "transport": "set-content",
+    "native_url_and_reload_persistence_tested": false
+  },
+  "delivery_source_byte_identical_to_tested_candidate": true,
+  "compared_source_files": 47,
+  "final_archive_changes_from_candidate": "validation evidence files and MANIFEST.sha256 only",
+  "environment": {
+    "python": "3.13.5",
+    "system": "Linux",
+    "machine": "x86_64"
+  },
+  "human_learning_effect_tested": false,
+  "live_TeleAgent_tested": false
+}

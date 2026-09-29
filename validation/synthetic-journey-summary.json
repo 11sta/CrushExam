@@ -1,0 +1,12 @@
+{
+  "synthetic_only": true,
+  "platform_live_test": false,
+  "real_learning_effect_test": false,
+  "commands": 32,
+  "passed": true,
+  "diagnostic_submissions": 4,
+  "last_independent_result": "right",
+  "last_evidence": "immediate",
+  "python": "3.13.5",
+  "final_stage": "session_complete"
+}

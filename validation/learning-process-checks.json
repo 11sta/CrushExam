@@ -1,0 +1,58 @@
+[
+  {
+    "name": "P04_partial_rubric_cannot_create_right",
+    "passed": true,
+    "observed": {
+      "status": "awaiting_manual",
+      "ratings": [
+        {
+          "id": "empty",
+          "label": "判空",
+          "reference_quote": "空时front=rear",
+          "status": "met"
+        },
+        {
+          "id": "__unassessed_reference__",
+          "label": "其余参考要点尚未核对",
+          "status": "unassessed",
+          "uncovered_text": "满时(rear+1)%m=front保留空位用于区分空与满"
+        }
+      ],
+      "history": 0
+    }
+  },
+  {
+    "name": "complete_source_contract_can_grade_complete_response",
+    "passed": true,
+    "observed": {
+      "result": "right",
+      "coverage": "complete",
+      "requirements": 3
+    }
+  },
+  {
+    "name": "P02_continue_cannot_skip_student_response",
+    "passed": true,
+    "observed": {
+      "phase": "awaiting_step",
+      "active_attempt": null
+    }
+  },
+  {
+    "name": "P03_confusion_is_not_promoted_to_independent",
+    "passed": true,
+    "observed": {
+      "phase": "step_check",
+      "student_text": "我还是不会，不知道出栈后剩下什么。"
+    }
+  },
+  {
+    "name": "P01_answer_credit_does_not_auto_pass_method",
+    "passed": true,
+    "observed": {
+      "result": "right",
+      "method": "pending",
+      "phase": "method_check"
+    }
+  }
+]
