@@ -11,7 +11,39 @@ import json
 import re
 from pathlib import Path
 
-from . import grading, questions
+from . import grading, questions, policy as policy_mod
+
+SCORING_SOURCES = ("teacher", "default", "ai_reference")
+
+
+def _validate_scoring(raw):
+    """Validate the optional top-level per-question `scoring` block.
+
+    The marks live at *question* level, never inside an individual criterion
+    (an invented per-point mark must not impersonate the teacher's marks).
+    `source` says where the max_score comes from: teacher / policy default /
+    AI-authored reference. Returns a normalized dict or None.
+    """
+    scoring = raw.get("scoring")
+    if scoring is None:
+        return None
+    if not isinstance(scoring, dict):
+        _error('scoring 必须是对象。')
+    mx = scoring.get("max_score")
+    if not isinstance(mx, int) or isinstance(mx, bool) or mx <= 0:
+        _error('scoring.max_score 必须为正整数。')
+    source = scoring.get("source")
+    if source not in SCORING_SOURCES:
+        _error('scoring.source 必须为 teacher/default/ai_reference。')
+    threshold = scoring.get("pass_threshold")
+    if threshold is not None and (not isinstance(threshold, int) or threshold <= 0):
+        _error('scoring.pass_threshold 必须为正整数。')
+    out = {"max_score": int(mx), "source": source}
+    if threshold is not None:
+        out["pass_threshold"] = int(threshold)
+    if isinstance(scoring.get("partial_share"), (int, float)):
+        out["partial_share"] = float(scoring["partial_share"])
+    return out
 
 
 def _error(text):
@@ -123,10 +155,13 @@ def validate_contract(raw, q):
     missing = uncovered(q.get('answer'), quotes)
     if missing:
         _error('评分契约未覆盖全部参考要点，不能冻结。未覆盖片段：' + missing[:160])
+    scoring = _validate_scoring(raw)
     result = {'qid': q['id'], 'item_version': questions.question_version(q),
               'answer_version': questions.question_answer_version(q), 'source': src,
               'question_quote': q.get('question', ''), 'criteria': clean,
               'approval': 'host_reviewed_complete', 'coverage_confirmed': True}
+    if scoring is not None:
+        result['scoring'] = scoring
     result['contract_id'] = fingerprint(result)
     return result
 
@@ -220,9 +255,12 @@ def assess(raw, q, a):
     has_negative = any(i['status'] in ('missing', 'partial') for i in ratings)
     pending = any(i['status'] in ('unassessed', 'uncertain') for i in ratings)
     result = 'wrong' if has_negative else 'right' if approved and not pending else None
+    numeric = None
+    if approved and c.get('scoring'):
+        numeric = policy_mod.rubric_score(c['scoring'], ratings)
     return {'source': source(q), 'contract_id': c.get('contract_id'), 'attempt_id': a['id'],
             'criteria': ratings, 'coverage_status': 'complete' if approved and not pending else 'incomplete_or_unapproved',
-            'assessor': 'host_manual_against_frozen_source', 'numeric_score': None,
+            'assessor': 'host_manual_against_frozen_source', 'numeric_score': numeric,
             'result': result, 'note': raw.get('note', '')}
 
 

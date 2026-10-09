@@ -9,11 +9,11 @@ AIGC:
   ReservedCode2: '7e77183e-c074-4a67-9963-1f58ff3eba86'
 ---
 
-# CrushExam 1.7.0 ·
+# CrushExam 1.8.0 ·
 
-**基于学生真实课程资料的可恢复备考教练：先诊断，再按具体解题步骤训练，用真实作答反馈，原答不可覆盖。**
+**基于学生真实课程资料的可恢复备考教练：先诊断，再按具体解题步骤训练，用真实作答反馈，原答不可覆盖。内置统一判分策略，全新账号开箱即用。**
 
-CrushExam 是一个面向期末、等级、考证等考试的 TeleAgent Skill。它只使用学生自己的课件、作业、试卷和教材——不用 AI 出题、不猜教师重点、不编造通过概率。核心脚本离线运行（Python 标准库），不依赖模型 API 或在线服务。
+CrushExam 是一个面向期末、等级、考证等考试的 TeleAgent Skill。它只使用学生自己的课件、作业、试卷和教材——不用 AI 出题、不猜教师重点、不编造通过概率。核心脚本离线运行（Python 标准库），不依赖模型 API 或在线服务。使用者只需在 TeleAgent 上提供资料（题目答案、教材、PPT、老师划的重点等）即可进入正式流程。
 
 ---
 
@@ -25,6 +25,7 @@ CrushExam 是一个面向期末、等级、考证等考试的 TeleAgent Skill。
 | **先答后查（Answer-first）** | 学生必须先提交原答才能看参考解析，代码级门禁（exit 5），不是行为约定 |
 | **原答不可覆盖** | `submit` 后原话冻结；`attempt_id` 标识每次尝试；重复提交幂等；重做必须重新呈题建立新 attempt |
 | **诚实边界** | 一次答对不称掌握；未测不是零分；提交数≠判分数；工具调用数≠积分；自报成绩必须标注 |
+| **统一判分策略** | 内置判分规则（10分制通过线≥8、多选10/6/0、不定项自动分流、AI参考显式标注），全新账号判分语义一致，不靠宿主每次现发挥 |
 | **可中断恢复** | 阶段、任务、未答题持久化；`session resume` 恢复原状，不重新初始化 |
 
 ## 功能总览
@@ -42,8 +43,8 @@ CrushExam 是一个面向期末、等级、考证等考试的 TeleAgent Skill。
 - 反馈：先存原答再 `grade`；只给结果、首个关键错误、下一动作
 
 **判分与证据**
-- 客观题自动判分（对/错/√/×/T/F、单字母、ABCD 集合归一化）
-- 主观题评分契约：看到学生答案**之前**用 `rubric draft/freeze` 冻结完整要点清单，`rubric ratings` 逐项核对（met/partial/missing/uncertain），漏评标 `unassessed` 不判全对
+- 客观题自动判分（对/错/√/×/T/F、单字母、ABCD 集合归一化）+ **内置判分策略**（多选全对10/漏选6/错选0、不定项自动分流、通过线≥8），判分结果写 attempt/history 的 `score/max_score/score_source/score_pass`
+- 主观题评分契约：看到学生答案**之前**用 `rubric draft/freeze` 冻结完整要点清单 + 题级 `scoring`，`rubric ratings` 逐项核对（met/partial/missing/uncertain），漏评标 `unassessed` 不判全对
 - 选项与方法分离：选对但理由错误 → 选项得分保留、方法进入 `method_check`
 - 跨日复测与迁移：同题隔日、未见原题、参数/表示/情境变化分别留痕（`verify-transfer --kind`），不互相冒充
 
@@ -62,14 +63,14 @@ CrushExam 是一个面向期末、等级、考证等考试的 TeleAgent Skill。
 
 CrushExam 是一个 TeleAgent 技能（Skill），部署后 TeleAgent 会在你说"备考/复习/刷题"等场景自动激活它。有两种安装方式：
 
-### 方式一：通过技能市场安装（推荐普通用户）
+### 方式一：通过技能市场安装（推荐，全新账号主用）
 
 如果你拿到的 ZIP 来自作者或技能市场：
 
 1. 打开 TeleAgent Desktop →【技能】→【我的技能】→ 导入/安装
 2. 选择 `crushexam-teleagent.zip`（确保解压后 `SKILL.md` 在根目录，不要套多层文件夹）
 3. 安装后在技能列表确认「循证备考教练」已启用；若提示技能数量已达上限（100 个），先在列表里停用不常用技能再启用
-4. 对话里说「用我的课程资料开始备考」，技能即被触发
+4. 对话里说「用我的课程资料开始备考」，技能即被触发；全新账号只需准备资料（题目答案、教材、PPT、老师划的重点），其余引导由 skill 的 §0 剧本自动完成
 
 ### 方式二：手动放置技能目录（推荐开发者/测试者）
 
@@ -99,7 +100,7 @@ skills\crushexam\
 ```bash
 cd <技能目录>\crushexam
 python coach.py doctor
-# 预期输出：CrushExam 1.7.0 | python 3.x ...，环境自检全绿
+# 预期输出：CrushExam 1.8.0 | python 3.x ...，环境自检全绿
 ```
 
 4. 重启 TeleAgent Desktop（或新开一个会话）让技能被发现，之后正常对话即可触发
@@ -164,18 +165,33 @@ coach/planner.py            时间预算与跨日复测调度
 coach/evidence.py           证据汇总（文字/矩阵/排序共用，未修复优先）
 coach/ability_view.py       能力视图与离线 HTML 热图
 coach/blueprint.py          考试蓝图：KC 词典、题→知识点映射、分层抽题
+coach/policy.py             判分策略唯一机器源（通过线、多选10/6/0、rubric落分）
 coach/material_safety.py    资料边界、共享题干、可用性检查
 coach/workbench.py          离线单题工作台与作答导入契约
 coach/workspace_lock.py     有界 OS 锁
 coach/ 其他模块             提取、章节、题库、判分、图像、索引等
 templates/workbench.html    单题工作台页面
-references/                 命令协议、评分点、KC 词典格式、OCR 边界
+references/                 命令协议、评分点、判分策略与样例、KC 词典格式、OCR 边界
+templates/grading-policy.json 判分策略默认配置（机器可读，可审计/覆盖）
 scripts/                    可重复的发布验证脚本
-tests/                      176 项单元与子进程回归
+tests/                      187 项单元与子进程回归
 validation/                 实际测试记录与检查证据
 ```
 
 **数据契约**：`study_state.json`（v7）为权威数据，`attempts` 保存不可变原答，`tasks` 保存可执行任务；`progress.md`/`notebook.md`/`session_summary.md` 是派生视图。状态使用唯一临时文件 + fsync + 原子替换。
+
+## v1.8 更新重点
+
+面向全新账号上线，把判分约定固化为默认策略：
+
+| 问题 | v1.8 处理 |
+|---|---|
+| 判分规则靠宿主每次现发挥，换账号/模型就丢 | 新增 `coach/policy.py` + `templates/grading-policy.json` + `references/grading-policy.md`，10分制通过线≥80%、多选10/6/0、不定项自动分流统一内置 |
+| 客观题判分无分值、无通过线 | `grade` 输出“得分：x/10｜通过/未通过（通过线8）”，写入 attempt/history |
+| 主观题要“每题显式分值分配”却怕要点冒充教师分值 | 契约顶层增加题级 `scoring`（含来源 teacher/default/ai_reference），要点级仍无分值 |
+| 全新账号不懂 CLI/工作区 | SKILL §0 首启剧本：最小资料包话术 + 工作区零提问 + doctor 首读人话翻译 |
+| 图片作答、AI 参考图规范缺失 | 图片路径入 attempt、视觉核对、rubric 引用；AI 参考图左下角标「AI参考，非老师答案」 |
+| 判分一致性缺少锚点 | 新增 `references/grading-cases.md` 判分样例库 |
 
 ## v1.7 更新重点
 
@@ -202,13 +218,13 @@ validation/                 实际测试记录与检查证据
 ## 测试与验证
 
 ```bash
-python -m unittest discover -s tests    # 176 项（Windows/Linux 均通过）
+python -m unittest discover -s tests    # 187 项（Windows/Linux 均通过）
 python coach.py doctor                  # 环境自检
 ```
 
 - 单测使用隔离临时目录与考试注册表，不触碰真实学习进度
 - `test_cli_flow` 以独立子进程跑完整用户旅程；已在 Windows 上修复 `USERPROFILE` 隔离（v1.7 原版仅设 `HOME`，Windows 下会读到真实注册表）
-- 合并保留了纯函数测试（chapters/extract/figures/index/questions/text/usage_log），合计 176 项
+- 合并保留了纯函数测试（chapters/extract/figures/index/questions/text/usage_log）并新增判分策略测试（test_grading_policy.py），合计 187 项
 - 实际验证记录（合成旅程、浏览器检查）见 `validation/RELEASE_VALIDATION.md`——合成测试不作为真人提分证据
 
 ## 边界声明
@@ -220,3 +236,5 @@ python coach.py doctor                  # 环境自检
 - 无 Python 执行能力时只能受限对话教学，不能声称状态已保存或判分已运行
 
 ---
+
+> AI生成

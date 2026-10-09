@@ -1,0 +1,24 @@
+{
+  "version": "crushexam-policy-v1",
+  "max_score": 10,
+  "pass_ratio": 0.8,
+  "objective": {
+    "single": {"full": 10, "wrong": 0},
+    "true_false": {"full": 10, "wrong": 0},
+    "multi": {"full": 10, "partial_missing": 6, "wrong": 0},
+    "indefinite": {"mode": "auto_split", "full": 10, "partial_missing": 6, "wrong": 0}
+  },
+  "subjective": {
+    "score_source": "rubric_contract"
+  },
+  "rubric_defaults": {
+    "equal_share": true,
+    "partial_share": 0.5
+  },
+  "hint_recognition": [
+    "viewed_answer",
+    "viewed_courseware",
+    "viewed_ai",
+    "knowledge_point_hint"
+  ]
+}

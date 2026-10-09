@@ -89,3 +89,28 @@ python coach.py -w <工作区> grade <目标qid> --transfer-from <基题qid>
 延续主状态v7，新增learning_contract_version=2。首次写入新版前备份study_state.v7.before-v1.7.0.json；旧手工评分要求覆盖未知标legacy_unverified，不改写旧得分。旧迁移类别未知标unclassified，不猜参数还是情境。旧已结束任务是历史记录，新报告不把它当现行的掌握保证。
 
 输入契约、作答和步骤记录都可在attempts与tasks中追溯。新的等待状态有明确暂缓、结束与恢复出口。不要运行两个不同版本并发写同一工作区。无Python/写入能力时只能受限对话，不能假称这些状态已持久化。
+
+## 6. 判分策略与题级分值（v1.8）
+
+判分约定集中写在 `grading-policy.md`（人读）与 `coach/policy.py` + `templates/grading-policy.json`（机器读）。默认 10 分制、通过线 80%（≥8）。
+
+**分值只落在题级，不落在要点级**（继续防止教练拆分的要点冒充教师分值）。冻结契约的顶层可携带 `scoring`：
+
+```json
+{
+  "qid": "真实题号", "item_version": "...", "answer_version": "...",
+  "source": {"file": "参考文件", "page": 1},
+  "coverage_confirmed": true,
+  "criteria": [{"id": "r1", "label": "要点名", "reference_quote": "真实参考片段"}],
+  "scoring": {"max_score": 10, "pass_threshold": 8, "source": "teacher|default|ai_reference", "partial_share": 0.5}
+}
+```
+
+- `source` 说明 max_score 出处：`teacher` / `default`（本策略默认10分）/ `ai_reference`（AI自拟，显式标注）。
+- 判分时 `rubric ratings` 逐项填 met/partial/missing/uncertain；`grade --rubric` 按 `policy.rubric_score` 计算题级得分：要点均分、partial 计半，有 `uncertain`/`unassessed` 时得分置为待定（`pass=None`），不生成确定结论。
+- 客观题（单选/判断/多选/不定项）由 `policy.grade_objective_score` 直接落分：全对 10、多选漏选 6、错选 0、单选/判断错 0；`attempts` 与 `history` 写入 `score/max_score/score_source/score_pass`。
+- 以下四种情形一律视为提示/受助，不记独立：看过答案、看过课件/讲义、看过 AI 提示或解答、看过知识点提示。
+
+示例判分见 `grading-cases.md`；这些是示意锚点，不代表某门课真实卷面。
+
+> AI生成

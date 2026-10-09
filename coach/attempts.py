@@ -9,7 +9,7 @@ import copy
 import json
 import datetime as dt
 import uuid
-from . import evidence, grading, questions, state as st, assessment
+from . import evidence, grading, policy as policy_mod, questions, state as st, assessment
 
 UNRESOLVED = {"presented", "needs_clarification", "submitted", "awaiting_manual"}
 TERMINAL = {"graded", "skipped", "deferred", "cancelled", "material_blocked", "unverified"}
@@ -244,6 +244,29 @@ def record(state, a, q, result, grading_source, note="", rubric=None, error_type
     if result not in ("right", "wrong"):
         raise AttemptError("跳过不是判分；请用 skip 命令。")
     indep = independent(state, a)
+    # Numeric score: objective auto-grading uses the shared policy default;
+    # subjective uses the frozen contract's scoring (or none if not frozen).
+    score_fields = {}
+    if rubric and isinstance(rubric.get("numeric_score"), dict):
+        numeric = rubric["numeric_score"]
+        score_fields = {
+            "score": numeric.get("score"),
+            "max_score": numeric.get("max_score"),
+            "score_source": numeric.get("source"),
+            "score_pass": numeric.get("pass"),
+            "score_pass_threshold": numeric.get("pass_threshold"),
+        }
+    else:
+        sc, mx, src = policy_mod.grade_objective_score(auto)
+        if sc is not None:
+            threshold = policy_mod.pass_threshold()
+            score_fields = {
+                "score": sc,
+                "max_score": mx,
+                "score_source": src,
+                "score_pass": sc >= threshold,
+                "score_pass_threshold": threshold,
+            }
     prior = [h for h in state.get("history", []) if h.get("qid") == q["id"]]
     day = a["submitted_at"][:10]
     delayed = bool(prior) and max(h.get("ts", "")[:10] for h in prior) < day
@@ -267,9 +290,13 @@ def record(state, a, q, result, grading_source, note="", rubric=None, error_type
                      grading_source=grading_source, confidence=a.get("confidence"),
                      minutes_spent=a.get("minutes_spent"), item_version=questions.question_version(q),
                      attempt_id=a["id"], rubric=rubric, error_type=error_type,
-                     graded_response=a.get("graded_response"), submitted_at=a["submitted_at"])
-    h.update(copy.deepcopy(dimensions))
+                     graded_response=a.get("graded_response"), submitted_at=a["submitted_at"],
+                     score=score_fields.get("score"), max_score=score_fields.get("max_score"),
+                     score_source=score_fields.get("score_source"), score_pass=score_fields.get("score_pass"))
     a.update(copy.deepcopy(dimensions))
+    a.update(copy.deepcopy(score_fields))
+    h.update(copy.deepcopy(dimensions))
+    h.update(copy.deepcopy(score_fields))
     h["verdict"] = auto["verdict"] if auto["verdict"] in ("right", "wrong", "partial") else result
     # Original submission time, not later grading time, determines the study day.
     h["graded_at"] = stamp()

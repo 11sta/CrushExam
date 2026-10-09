@@ -194,7 +194,8 @@ def record_result(state, qid, chapter_n, result, note="", evidence_level="untest
                   is_independent=False, response=None, answer_version=None,
                   grading_source=None, confidence=None, minutes_spent=None,
                   item_version=None, attempt_id=None, rubric=None, error_type=None,
-                  graded_response=None, submitted_at=None):
+                  graded_response=None, submitted_at=None,
+                  score=None, max_score=None, score_source=None, score_pass=None):
     """Record a quiz attempt and update mistakes.
 
     evidence_level: "untested" | "hinted" | "immediate" | "delayed" | "transfer"
@@ -219,7 +220,9 @@ def record_result(state, qid, chapter_n, result, note="", evidence_level="untest
                          ("grading_source", grading_source), ("confidence", confidence),
                          ("minutes_spent", minutes_spent), ("item_version", item_version),
                          ("attempt_id", attempt_id), ("rubric", rubric), ("error_type", error_type),
-                         ("graded_response", graded_response), ("submitted_at", submitted_at)):
+                         ("graded_response", graded_response), ("submitted_at", submitted_at),
+                         ("score", score), ("max_score", max_score), ("score_source", score_source),
+                         ("score_pass", score_pass)):
         if value is not None:
             attempt[field] = value
     if note:

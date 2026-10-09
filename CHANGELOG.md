@@ -1,3 +1,15 @@
+# v1.8.0 · 判分策略固化与全新账号开箱即用
+
+- 新增 `coach/policy.py` + `templates/grading-policy.json` + `references/grading-policy.md`：把比赛期间协商的判分约定固化为默认产品配置（统一 10 分制、通过线 ≥8、单选/判断 10/0、多选 10/6/0、不定项按学生答案形态自动分流、提示=看答案/课件/AI/知识点四类）。全新账号无需再让宿主每次现发挥判分规则。
+- 客观题判分落分值：`attempts`/`history` 写入 `score/max_score/score_source/score_pass`；`grade` 输出“得分：x/10｜通过/未通过（通过线8）”。
+- 主观题评分契约增加题级 `scoring`（`max_score/pass_threshold/source: teacher|default|ai_reference`），要点级仍不携带分值，防要点冒充教师分值；`policy.rubric_score` 按均分+partial 计半落分，存在 uncertain/unassessed 时不判通过。
+- SKILL.md 新增 §0 全新账号首启剧本（最小资料包话术、工作区零提问、doctor 首跑人话翻译、老师重点 human_confirmed 确认通道）。
+- SKILL.md 增加图片作答约定（图片路径入 attempt、视觉核对、rubric 引用）与 AI 参考图标注（左下角优先标「AI参考，非老师答案」）。
+- 新增 `references/grading-cases.md` 判分样例库（脱敏锚点）供宿主判分对照。
+- 版本号升至 1.8.0；升级沿用 v7→v1.8 自动备份，绝不用 `--fresh` 重置学习进度。
+
+---
+
 # v1.7.0 · 学习证据与带做闭环修复
 
 - 增加 `assessment.py`：作答前冻结完整评分要求；本次作答绑定契约/题干/答案版本。漏评为 unassessed，不能因为只评一问就判全对；旧格式只允许局部反馈，不伪造整题正确。
@@ -41,3 +53,5 @@
 ## 验证与边界
 
 运行 `python -m unittest discover -s tests -v` 可覆盖决策、能力视图、身份迁移和真实命令行流程。运行 `python coach.py doctor` 检查当前环境。PDF、扫描件、手写页及跨页题面仍需按源文件逐页核实；TeleAgent 上的导入和积分变化需要在参赛环境中另行实测，本地测试不代表平台验收。
+
+> AI生成

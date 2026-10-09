@@ -382,6 +382,12 @@ def grade(args):
     print("%s｜%s" % ("正确" if result == "right" else "部分正确" if auto["verdict"] == "partial" else "需要修正",
                        evidence.attempt_label(a, w.zh) if result == "right" else "已作答，本次尚未形成正确证据"))
     print("原答：%s" % a["raw_answer"])
+    if a.get("score") is not None:
+        tag = {"teacher": "教师分值", "policy_default": "默认10分制", "ai_reference": "AI参考判分"}.get(a.get("score_source"), "")
+        pf = "通过" if a.get("score_pass") else "未通过"
+        th = a.get("score_pass_threshold")
+        th_str = ("（通过线 %d）" % th) if th else ""
+        print("得分：%d / %d %s｜%s%s" % (a["score"], a.get("max_score", 10), tag, pf, th_str))
     if a.get("graded_response") != a.get("raw_answer"):
         print("格式澄清：%s（首次原答未改动）" % a["graded_response"])
     print("参考依据：%s p.%s" % ((q.get("answer_source") or q["source"])["file"], (q.get("answer_source") or q["source"])["page"]))
