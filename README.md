@@ -1,14 +1,3 @@
----
-AIGC:
-  ContentProducer: '001191110102MAD55U9H0F10002'
-  ContentPropagator: '001191110102MAD55U9H0F10002'
-  Label: '1'
-  ProduceID: '85940041-a441-40d1-ad2f-54316284df22'
-  PropagateID: '85940041-a441-40d1-ad2f-54316284df22'
-  ReservedCode1: '7e77183e-c074-4a67-9963-1f58ff3eba86'
-  ReservedCode2: '7e77183e-c074-4a67-9963-1f58ff3eba86'
----
-
 # CrushExam 1.8.0 ·
 
 **基于学生真实课程资料的可恢复备考教练：先诊断，再按具体解题步骤训练，用真实作答反馈，原答不可覆盖。内置统一判分策略，全新账号开箱即用。**
@@ -236,5 +225,3 @@ python coach.py doctor                  # 环境自检
 - 无 Python 执行能力时只能受限对话教学，不能声称状态已保存或判分已运行
 
 ---
-
-> AI生成
