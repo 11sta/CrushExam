@@ -5,6 +5,7 @@
 - 主观题评分契约增加题级 `scoring`（`max_score/pass_threshold/source: teacher|default|ai_reference`），要点级仍不携带分值，防要点冒充教师分值；`policy.rubric_score` 按均分+partial 计半落分，存在 uncertain/unassessed 时不判通过。
 - SKILL.md 新增 §0 全新账号首启剧本（最小资料包话术、工作区零提问、doctor 首跑人话翻译、老师重点 human_confirmed 确认通道）。
 - SKILL.md 增加图片作答约定（图片路径入 attempt、视觉核对、rubric 引用）与 AI 参考图标注（左下角优先标「AI参考，非老师答案」）。
+- 修复选择题呈现可读性：SKILL §6 增加硬规则——每个选项独立成行、逐行原样展示，禁止把选项拼进题干段落或折叠成一段；CLI 在选项块后输出就近的呈现格式要求，宿主在聊天中重组题目时不再把 A/B/C/D 选项合并成连续段落。
 - 新增 `references/grading-cases.md` 判分样例库（脱敏锚点）供宿主判分对照。
 - 版本号升至 1.8.0；升级沿用 v7→v1.8 自动备份，绝不用 `--fresh` 重置学习进度。
 

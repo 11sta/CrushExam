@@ -15,6 +15,17 @@ except ImportError:
     HAS_PYPDF = False
 
 
+def _has_any_pdf_backend():
+    """extract.read_pdf accepts pypdfium2 OR pypdf; mirror that here."""
+    if HAS_PYPDF:
+        return True
+    try:
+        import pypdfium2  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
 class ExtractTest(unittest.TestCase):
     def setUp(self):
         self.dir = tempfile.mkdtemp(prefix="ecc-")
@@ -64,8 +75,8 @@ class ExtractTest(unittest.TestCase):
         self.assertIn("Lecture 2: Sorting", pages[0].text)
         self.assertIn("Merge sort", pages[1].text)
 
-    @unittest.skipIf(HAS_PYPDF, "pypdf installed")
-    def test_pdf_without_pypdf_is_reported_not_fatal(self):
+    @unittest.skipIf(_has_any_pdf_backend(), "PDF backend (pypdfium2/pypdf) installed")
+    def test_pdf_without_backend_is_reported_not_fatal(self):
         make_pdf(self.path("l.pdf"), ["x"])
         src = extract.extract_source(self.dir, self.path("l.pdf"))
         self.assertEqual(src.error, "pdf_support_missing")

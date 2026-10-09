@@ -84,6 +84,15 @@ class GradingScoreFlowTests(FlowFixture):
         # 无冻结契约，不能直接判整题正确
         self.assertIn("主观题原答已保存", out)
 
+    def test_choice_options_presented_one_per_line(self):
+        # 选择题呈现硬规则：选项逐行 + 就近呈现要求，供宿主聊天重组时照搬。
+        self.planned()
+        q = self.q(1)  # 单选题，选项 A./B. 各占一行
+        out = self.run_cmd("quiz", "--qid", q["id"])
+        self.assertIn("\n".join(q["options"]), out)  # 选项各占一行、顺序原样
+        self.assertIn("逐行", out)  # 就近呈现要求
+        self.assertNotIn(" ".join(q["options"]), out)  # 不得合并成一行
+
 
 if __name__ == "__main__":
     unittest.main()

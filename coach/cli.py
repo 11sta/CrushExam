@@ -917,6 +917,8 @@ def _print_question(q, w, ws, with_answer=False):
         print(safety.wrap(context.get("text", "")))
     print(safety.wrap((q.get("question") or "题干缺失，需核对原材料") +
                       ("\n" + "\n".join(q.get("options") or []) if q.get("options") else "")))
+    if q.get("options"):
+        print("呈现要求：以上每个选项独立成行、逐行原样展示（A./B./C./… 各占一行），不合并为一段，不改写选项文字。")
     _print_figs(ws, w("q_fig"), q.get("figures"))
     if with_answer:
         print("--- %s ---" % w("ref_answer"))
