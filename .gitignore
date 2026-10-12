@@ -17,6 +17,9 @@ validation/screenshots/
 Thumbs.db
 .DS_Store
 
+# IDE
+.idea/
+
 # Local working data (never upload user study data)
 exam-cram/
 *.tool-usage-log.json

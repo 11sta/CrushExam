@@ -12,6 +12,7 @@ import re
 import zipfile
 import xml.etree.ElementTree as ET
 
+from . import pii
 from .text import clean
 
 TEXT_EXT = {".md", ".markdown", ".txt", ".text", ".rst"}
@@ -336,6 +337,19 @@ def extract_source(materials, path):
         return src
     src.empty_pages = [p.number for p in src.pages if len(p.text.strip()) < 20]
     src.pages = strip_repeated_lines(src.pages)
+    counts = {}
+    pages = []
+    for p in src.pages:
+        text, hits = pii.mask_pii(p.text)
+        pages.append(Page(p.number, text, p.scan))
+        for k, v in hits.items():
+            counts[k] = counts.get(k, 0) + v
+    src.pages = pages
+    masked = {k: v for k, v in counts.items() if k != "name_fields"}
+    if masked:
+        src.warnings.append("pii_masked: " + ", ".join("%s=%d" % kv for kv in sorted(masked.items())))
+    if counts.get("name_fields"):
+        src.warnings.append("pii_name_field: %d" % counts["name_fields"])
     src.kind = classify(rel, src.text)
     if src.pages and len(src.empty_pages) == len(src.pages):
         src.warnings.append("no_text")

@@ -49,6 +49,10 @@ _T = {
     "no_text": ("没有可提取文本（扫描件/纯图片）。讲这一章时请直接打开文件查看",
                 "has no extractable text (scan/pure images). Open the file directly when teaching it"),
     "read_error": ("读取失败", "could not be read"),
+    "pii_masked": ("已掩码疑似个人信息（手机/身份证/邮箱/学号等格式类，人名不自动掩码）",
+                   "masked likely personal data (phone/ID/email/student-id patterns; names are not auto-masked)"),
+    "pii_name_field": ("检测到疑似姓名栏，未自动掩码，请与学生确认是否自行处理",
+                       "possible name field(s) detected; not auto-masked, ask the student whether to remove them"),
     "next_steps": ("下一步", "Next"),
     "course": ("课程", "Course"),
     "exam_in": ("距考试", "Exam in"),
@@ -692,6 +696,10 @@ def cmd_setup(args):
         for wn in s.warnings:
             if wn.startswith("figures_failed"):
                 notes.append("%s: %s" % (s.rel, wn))
+            elif wn.startswith("pii_masked:"):
+                notes.append("%s: %s（%s）" % (s.rel, w("pii_masked"), wn.split(":", 1)[1].strip()))
+            elif wn.startswith("pii_name_field"):
+                notes.append("%s: %s" % (s.rel, w("pii_name_field")))
     print("资料 | 类型(自动归类) | 提取状态 | 用途/待核对")
     print("--- | --- | --- | ---")
     for src in sources[:8]:
