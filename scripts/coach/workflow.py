@@ -99,34 +99,34 @@ def next_command(state):
     flow = ensure(state)
     stage = flow.get("stage")
     if stage not in STAGES:
-        return "python coach.py session recover"
+        return "python scripts/coach.py session recover"
     if stage in ("paused", "session_complete"):
-        return "python coach.py session resume"
+        return "python scripts/coach.py session resume"
     a = at.active(state)
     if a:
         if a["status"] == "needs_clarification":
-            return 'python coach.py clarify %s "<更清楚的选项或对/错>"' % a["qid"]
+            return 'python scripts/coach.py clarify %s "<更清楚的选项或对/错>"' % a["qid"]
         if a["status"] == "presented":
-            return 'python coach.py submit %s "<你的原答>"' % a["qid"]
-        return "python coach.py grade %s" % a["qid"]
+            return 'python scripts/coach.py submit %s "<你的原答>"' % a["qid"]
+        return "python scripts/coach.py grade %s" % a["qid"]
     if stage == "diagnosing":
-        return "python coach.py quiz --stratified"
+        return "python scripts/coach.py quiz --stratified"
     if stage == "analysis":
-        return "python coach.py gaps"
+        return "python scripts/coach.py gaps"
     if stage == "planning":
-        return "python coach.py plan"
+        return "python scripts/coach.py plan"
     task = tasks.current(state)
     if task:
         if task['phase'] == 'awaiting_step':
-            return 'python coach.py task note --note "<学生实际补出的步骤>"'
+            return 'python scripts/coach.py task note --note "<学生实际补出的步骤>"'
         if task['phase'] == 'step_check':
-            return 'python coach.py task assess --step-id %s --verdict <met|partial|incorrect|uncertain> --quote "<原话>" --reference-quote "<参考片段>" --note "<核对说明>"' % task.get('pending_step_id')
+            return 'python scripts/coach.py task assess --step-id %s --verdict <met|partial|incorrect|uncertain> --quote "<原话>" --reference-quote "<参考片段>" --note "<核对说明>"' % task.get('pending_step_id')
         if task['phase'] == 'method_check':
-            return 'python coach.py task；核对首次理由或 task skip-check --note "<明确暂缓原因>"'
-        return "python coach.py next"
+            return 'python scripts/coach.py task；核对首次理由或 task skip-check --note "<明确暂缓原因>"'
+        return "python scripts/coach.py next"
     if state.get("tasks"):
-        return "python coach.py session finish"
-    return "python coach.py plan"
+        return "python scripts/coach.py session finish"
+    return "python scripts/coach.py plan"
 
 
 def denied(state, args):

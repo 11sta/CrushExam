@@ -1,4 +1,4 @@
-# CrushExam 1.8.0 ·
+# CrushExam 1.9.0 ·
 
 **基于学生真实课程资料的可恢复备考教练：先诊断，再按具体解题步骤训练，用真实作答反馈，原答不可覆盖。内置统一判分策略，全新账号开箱即用。**
 
@@ -77,19 +77,18 @@ git clone https://github.com/11sta/CrushExam.git
 ```text
 skills\crushexam\
 ├── SKILL.md          ← 必须在这里（技能的入口）
-├── coach.py
-├── coach\
-├── references\
-├── templates\
-└── ...
+├── scripts\          ← coach.py 入口与 coach\ 包
+├── references\      ← README、判分策略等文档
+├── assets\           ← workbench.html、grading-policy.json
+└── tests\
 ```
 
 3. 验证安装：
 
 ```bash
 cd <技能目录>\crushexam
-python coach.py doctor
-# 预期输出：CrushExam 1.8.0 | python 3.x ...，环境自检全绿
+python scripts/coach.py doctor
+# 预期输出：CrushExam 1.9.0 | python 3.x ...，环境自检全绿
 ```
 
 4. 重启 TeleAgent Desktop（或新开一个会话）让技能被发现，之后正常对话即可触发
@@ -97,7 +96,7 @@ python coach.py doctor
 ### 安装验证清单
 
 - [ ] `SKILL.md` 位于技能文件夹**根目录**（不是子文件夹里）
-- [ ] `python coach.py doctor` 正常运行
+- [ ] `python scripts/coach.py doctor` 正常运行
 - [ ] 技能列表显示「循证备考教练」且已启用
 - [ ] 对话说"帮我备考"时技能被激活
 
@@ -122,20 +121,20 @@ python coach.py doctor
 
 ```bash
 # 1. 首次：资料 + 考试信息
-python coach.py setup "课程资料目录" --exam netsec-final --date 2026-10-04 --lang zh --goal pass --minutes 45
+python scripts/coach.py setup "课程资料目录" --exam netsec-final --date 2026-10-04 --lang zh --goal pass --minutes 45
 
 # 2. 分层摸底（逐题提交原答，整轮结束后统一分析）
-python coach.py -w "<工作区>" quiz --stratified -n 4
-python coach.py -w "<工作区>" submit <qid> "学生真实原答"   # 每题一次
+python scripts/coach.py -w "<工作区>" quiz --stratified -n 4
+python scripts/coach.py -w "<工作区>" submit <qid> "学生真实原答"   # 每题一次
 
 # 3. 分析 → 计划 → 学习
-python coach.py -w "<工作区>" gaps --html
-python coach.py -w "<工作区>" plan
-python coach.py -w "<工作区>" next
+python scripts/coach.py -w "<工作区>" gaps --html
+python scripts/coach.py -w "<工作区>" plan
+python scripts/coach.py -w "<工作区>" next
 
 # 4. 会话管理
-python coach.py -w "<工作区>" session finish   # 结束本次（保留状态）
-python coach.py -w "<工作区>" session resume   # 下次恢复
+python scripts/coach.py -w "<工作区>" session finish   # 结束本次（保留状态）
+python scripts/coach.py -w "<工作区>" session resume   # 下次恢复
 ```
 
 学生全程用自然语言（"开始""我的答案是…""不理解这步""今天结束"），命令由宿主代为执行。完整命令协议见 `references/workflow-and-commands.md`，评分契约见 `references/learning-contracts.md`。
@@ -144,30 +143,44 @@ python coach.py -w "<工作区>" session resume   # 下次恢复
 
 ```text
 SKILL.md                    宿主教学与交互契约（阶段门禁、呈现规则、诚实边界）
-coach.py                    命令入口
-coach/runtime.py            工作流控制器（命令分发、阶段校验）
-coach/workflow.py           阶段状态机、恢复、会话收束
-coach/attempts.py           不可变原答、attempt_id、独立性与时间线
-coach/assessment.py         冻结评分契约、完整覆盖校验、原始理由核对
-coach/tasks.py              持久化教学任务（补讲/带做/独立/反馈）
-coach/planner.py            时间预算与跨日复测调度
-coach/evidence.py           证据汇总（文字/矩阵/排序共用，未修复优先）
-coach/ability_view.py       能力视图与离线 HTML 热图
-coach/blueprint.py          考试蓝图：KC 词典、题→知识点映射、分层抽题
-coach/policy.py             判分策略唯一机器源（通过线、多选10/6/0、rubric落分）
-coach/material_safety.py    资料边界、共享题干、可用性检查
-coach/workbench.py          离线单题工作台与作答导入契约
-coach/workspace_lock.py     有界 OS 锁
-coach/ 其他模块             提取、章节、题库、判分、图像、索引等
-templates/workbench.html    单题工作台页面
+scripts/coach.py            命令入口
+scripts/coach/runtime.py    工作流控制器（命令分发、阶段校验）
+scripts/coach/workflow.py   阶段状态机、恢复、会话收束
+scripts/coach/attempts.py   不可变原答、attempt_id、独立性与时间线
+scripts/coach/assessment.py 冻结评分契约、完整覆盖校验、原始理由核对
+scripts/coach/tasks.py      持久化教学任务（补讲/带做/独立/反馈）
+scripts/coach/planner.py    时间预算与跨日复测调度
+scripts/coach/evidence.py   证据汇总（文字/矩阵/排序共用，未修复优先）
+scripts/coach/ability_view.py 能力视图与离线 HTML 热图（导出侧二次掩码）
+scripts/coach/blueprint.py  考试蓝图：KC 词典、题→知识点映射、分层抽题
+scripts/coach/policy.py     判分策略唯一机器源（通过线、多选10/6/0、rubric落分）
+scripts/coach/material_safety.py 资料边界、共享题干、可用性检查
+scripts/coach/workbench.py  离线单题工作台与作答导入契约
+scripts/coach/workspace_lock.py 有界 OS 锁
+scripts/coach/pii.py        入库+导出双层格式类个人信息掩码
+scripts/coach/ 其他模块     提取、章节、题库、判分、图像、索引等
+assets/workbench.html       单题工作台页面
+assets/grading-policy.json  判分策略默认配置（机器可读，可审计/覆盖）
 references/                 命令协议、评分点、判分策略与样例、KC 词典格式、OCR 边界
-templates/grading-policy.json 判分策略默认配置（机器可读，可审计/覆盖）
-scripts/                    可重复的发布验证脚本
-tests/                      187 项单元与子进程回归
-validation/                 实际测试记录与检查证据
+scripts/                    coach 入口 + 发布验证脚本 + MANIFEST
+references/README.md        安装与使用说明
+references/CHANGELOG.md     版本历史
+references/LICENSE          MIT 许可证
+tests/                      单元与子进程回归（含导出掩码回归）
 ```
 
 **数据契约**：`study_state.json`（v7）为权威数据，`attempts` 保存不可变原答，`tasks` 保存可执行任务；`progress.md`/`notebook.md`/`session_summary.md` 是派生视图。状态使用唯一临时文件 + fsync + 原子替换。
+
+## v1.9 更新重点
+
+目录结构与隐私加固：
+
+| 变更 | 说明 |
+|---|---|
+| 目录对齐 Skill 规范 | `coach/` 与入口移入 `scripts/`，`templates/` 移入 `assets/`，文档移入 `references/`；命令统一为 `python scripts/coach.py ...` |
+| 导出侧二次掩码 | `gaps --html`、`gaps` 表格、`cheatsheet` 渲染前对课程名/标题/文件名/片段再掩码；`python scripts/mask_check.py <文件>` 可独立预览掩码效果 |
+| 资料目录只读承诺 | 脚本不修改/移动/删除任何原始资料文件，产物只写入 `exam-cram/` 子目录 |
+| 文件句柄修复 | 全部 `open().read()` 改为 with 上下文管理，消除 ResourceWarning |
 
 ## v1.8 更新重点
 
@@ -207,14 +220,14 @@ validation/                 实际测试记录与检查证据
 ## 测试与验证
 
 ```bash
-python -m unittest discover -s tests    # 187 项（Windows/Linux 均通过）
-python coach.py doctor                  # 环境自检
+python -m unittest discover -s tests -t .    # 在技能根目录运行（Windows/Linux 均通过）
+python scripts/coach.py doctor                  # 环境自检
 ```
 
 - 单测使用隔离临时目录与考试注册表，不触碰真实学习进度
 - `test_cli_flow` 以独立子进程跑完整用户旅程；已在 Windows 上修复 `USERPROFILE` 隔离（v1.7 原版仅设 `HOME`，Windows 下会读到真实注册表）
-- 合并保留了纯函数测试（chapters/extract/figures/index/questions/text/usage_log）并新增判分策略测试（test_grading_policy.py），合计 187 项
-- 实际验证记录（合成旅程、浏览器检查）见 `validation/RELEASE_VALIDATION.md`——合成测试不作为真人提分证据
+- 合并保留了纯函数测试（chapters/extract/figures/index/questions/text/usage_log）并新增判分策略测试（test_grading_policy.py）与导出掩码回归（test_export_masking.py）
+- 端到端合成旅程复现：`python scripts/validate_release.py --out <空目录>`（独立 HOME、零网络、合成材料）——合成测试不作为真人提分证据
 
 ## 边界声明
 

@@ -12,7 +12,7 @@ import re
 
 _PHONE = re.compile(r"(?<!\d)(1[3-9]\d)\d{4}(\d{4})(?!\d)")
 _ID18 = re.compile(r"(?<![0-9A-Za-z])(\d{6})\d{8}(\d{3}[0-9Xx])(?![0-9A-Za-z])")
-_EMAIL = re.compile(r"\b([A-Za-z0-9._%+-]{1,3})[A-Za-z0-9._%+-]*(@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+)")
+_EMAIL = re.compile(r"(?<![A-Za-z0-9._%+-])([A-Za-z0-9._%+-]{1,3})[A-Za-z0-9._%+-]*(@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+)")
 _LABELED_ID = re.compile(
     r"(学号|考生号|准考证号|学籍号|student\s*id|admission\s*(?:ticket|card)\s*(?:no\.?|number)?)"
     r"(\s*[:：#]?\s*)(\d{5,14})", re.I)

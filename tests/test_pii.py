@@ -26,6 +26,14 @@ class MaskPiiTest(unittest.TestCase):
         self.assertNotIn("zhangsan99@", text)
         self.assertEqual(counts.get("email"), 1)
 
+    def test_email_glued_to_cjk_text_masked(self):
+        # \b never fires between a CJK char and an ASCII letter, so the
+        # boundary must be a character-class lookbehind, not \b.
+        text, counts = mask_pii("邮箱zhangsan99@example.edu.cn")
+        self.assertNotIn("zhangsan99@", text)
+        self.assertIn("zha***@example.edu.cn", text)
+        self.assertEqual(counts.get("email"), 1)
+
     def test_labeled_student_id_masked(self):
         text, counts = mask_pii("学号：2021010113\n姓名：张三")
         self.assertIn("20******13", text)

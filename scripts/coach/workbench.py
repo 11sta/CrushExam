@@ -53,7 +53,7 @@ def write(path, workspace, state, a=None, q=None):
                             "method_status": a.get("method_status"), "transfer_kind": a.get("transfer_kind"),
                             "novelty": a.get("novelty"),
                             "reference": q.get("answer") if q else None}
-    template = (Path(__file__).resolve().parents[1] / "templates" / "workbench.html").read_text(encoding="utf-8")
+    template = (Path(__file__).resolve().parents[2] / "assets" / "workbench.html").read_text(encoding="utf-8")
     safe_json = json.dumps(data, ensure_ascii=False).replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
     content = template.replace("__CRUSHEXAM_DATA__", safe_json)
     Path(path).parent.mkdir(parents=True, exist_ok=True)

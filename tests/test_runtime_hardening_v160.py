@@ -12,7 +12,7 @@ import unittest
 
 from coach import attempts as at, blueprint, exams, questions
 from coach.workspace_lock import locked
-from test_reliability_v160 import FlowFixture, ROOT
+from .test_reliability_v160 import FlowFixture, ROOT
 
 
 class RuntimeHardening(FlowFixture):
@@ -146,7 +146,7 @@ class ProcessLocks(unittest.TestCase):
     def test_crashed_process_releases_lock_without_stale_file_deletion(self):
         with tempfile.TemporaryDirectory() as d:
             script="from coach.workspace_lock import locked; import sys,time\nwith locked(sys.argv[1]):\n print('locked',flush=True)\n time.sleep(60)\n"
-            p=subprocess.Popen([sys.executable,"-c",script,d],cwd=ROOT,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+            p=subprocess.Popen([sys.executable,"-c",script,d],cwd=ROOT/"scripts",stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
             try:
                 self.assertEqual(p.stdout.readline().strip(),"locked")
                 p.kill();p.wait(timeout=5)
@@ -166,7 +166,7 @@ exams.REGISTRY_FILE=os.path.join(exams.REGISTRY_DIR,'exam_registry.json')
 exams.OLD_POINTER=os.path.join(base,'pointer')
 exams.register(eid,eid,'final',None,'pass',os.path.join(base,eid),base)
 """
-            ps=[subprocess.Popen([sys.executable,"-c",script,d,"exam%d"%i],cwd=ROOT,stdout=subprocess.PIPE,stderr=subprocess.PIPE) for i in range(6)]
+            ps=[subprocess.Popen([sys.executable,"-c",script,d,"exam%d"%i],cwd=ROOT/"scripts",stdout=subprocess.PIPE,stderr=subprocess.PIPE) for i in range(6)]
             for p in ps:
                 stdout,stderr=p.communicate(timeout=10)
                 self.assertEqual(p.returncode,0,stderr.decode())

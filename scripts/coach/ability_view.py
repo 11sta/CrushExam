@@ -9,6 +9,17 @@ import html
 import os
 
 from . import blueprint as bpmod, evidence
+from .pii import mask_pii
+
+
+def _m(value):
+    """Second-pass masking of material-derived strings before HTML escaping.
+
+    Input-side masking already ran when materials entered the workspace; this
+    re-applies the same high-confidence patterns to course titles, module /
+    chapter titles and source file names rendered into the capability view.
+    """
+    return mask_pii(str(value if value is not None else ""))[0]
 
 
 _TYPE_ZH = {"choice": "选择", "true_false": "判断", "fill_blank": "填空",
@@ -195,7 +206,7 @@ def write_html(path, state, bank, bp, rows=None, mode=None):
     mapping = (bp or {}).get("q_map") or {}
     n_mapped = sum(q.get("id") in mapping for q in bank)
     heading = _e(_t("title", zh))
-    title = _e(state.get("course") or state.get("exam_id") or "CrushExam")
+    title = _e(_m(state.get("course") or state.get("exam_id") or "CrushExam"))
     bits = ["<!doctype html><html lang='%s'><head><meta charset='utf-8'>" % ("zh-CN" if zh else "en"),
             "<meta name='viewport' content='width=device-width,initial-scale=1'>",
             "<title>%s · %s</title>" % (heading, title),
@@ -221,7 +232,7 @@ def write_html(path, state, bank, bp, rows=None, mode=None):
         for row, why in priorities:
             s = row["summary"]
             bits.append("<li><strong>%s</strong> · %s · N=%d/%d</li>" % (
-                _e(row["title"]), _e(why), s["n"], s["total"]))
+                _e(_m(row["title"])), _e(why), s["n"], s["total"]))
         bits.append("</ol>")
     else:
         bits.append("<p>%s</p>" % _e(_t("none", zh)))
@@ -235,7 +246,7 @@ def write_html(path, state, bank, bp, rows=None, mode=None):
             s = r["summary"]
             status = s["status"] if s["total"] else "untested"
             bits.append("<div class='mini %s'><strong>%s</strong><small>N=%d/%d · %s</small></div>" % (
-                status, _e(r["title"]), s["n"], s["total"], _e(s["last"])))
+                status, _e(_m(r["title"])), s["n"], s["total"], _e(s["last"])))
         bits.append("</div></section>")
 
     bits.append("<section class='card'><h2>%s</h2>" % _e(_t("matrix", zh)))
@@ -246,7 +257,7 @@ def write_html(path, state, bank, bp, rows=None, mode=None):
         bits.append("<th scope='col'>%s</th>" % _e(labels[kind]))
     bits.append("</tr></thead><tbody>")
     for row in data:
-        title_cell = row["title"] + " · " + bpmod.strength_label(row["summary"]["strength"], zh)
+        title_cell = _m(row["title"]) + " · " + bpmod.strength_label(row["summary"]["strength"], zh)
         if row["chapter"] is not None:
             title_cell = ("%s %s · " % (_t("chapter", zh), row["chapter"])) + title_cell
         bits.append("<tr><th scope='row'>%s</th>" % _e(title_cell))
@@ -297,7 +308,7 @@ def write_html(path, state, bank, bp, rows=None, mode=None):
     for fname, info in sorted(files.items()):
         kind_txt = ", ".join(kind_labels.get(k, k) for k in sorted(info["kinds"]))
         bits.append("<tr><td>%s</td><td>%s</td><td>%d</td><td>%s</td></tr>" % (
-            _e(fname), _e(kind_txt), info["n"], _e(_t("source_use", zh))))
+            _e(_m(fname)), _e(kind_txt), info["n"], _e(_t("source_use", zh))))
     if not files:
         bits.append("<tr><td colspan='4'>%s</td></tr>" % _e(_t("no_questions", zh)))
     bits.append("</tbody></table></div></section></main></body></html>")

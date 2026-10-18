@@ -14,7 +14,7 @@ import http.server
 import threading
 
 ROOT=Path(__file__).resolve().parents[1]
-sys.path[:0]=[str(ROOT),str(ROOT/"tests")]
+sys.path[:0]=[str(ROOT/"scripts"),str(ROOT),str(ROOT/"tests")]
 from test_reliability_v160 import FlowFixture
 from coach import attempts as at
 

@@ -12,7 +12,7 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path[:0] = [str(ROOT), str(ROOT/'tests')]
+sys.path[:0] = [str(ROOT/'scripts'), str(ROOT), str(ROOT/'tests')]
 from test_reliability_v160 import LESSON, HW
 
 
@@ -34,7 +34,7 @@ def main():
     def state(): return json.loads((ws/'study_state.json').read_text(encoding='utf-8'))
     def bank(): return json.loads((ws/'quiz_bank.json').read_text(encoding='utf-8'))
     def call(*cmd, expected=0):
-        argv=[sys.executable,str(ROOT/'coach.py')]
+        argv=[sys.executable,str(ROOT/'scripts'/'coach.py')]
         if cmd[0]!='setup':argv+=['-w',str(ws)]
         p=subprocess.run(argv+list(map(str,cmd)),env=env,cwd=ROOT,capture_output=True,text=True,timeout=30)
         records.append({'command':list(map(str,cmd)),'exit':p.returncode,'expected_exit':expected,'stdout':p.stdout,'stderr':p.stderr})

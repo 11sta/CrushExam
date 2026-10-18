@@ -1,3 +1,13 @@
+# v1.9.0 · 标准目录结构与导出侧掩码加固
+
+- 目录结构对齐 TeleAgent Skill 规范：`coach/` 与入口 `coach.py` 移入 `scripts/`，`templates/` 移入 `assets/`，`README.md`/`CHANGELOG.md`/`LICENSE` 移入 `references/`；技能根目录只保留 `SKILL.md / scripts / references / assets / tests`。全部命令更新为 `python scripts/coach.py ...`。
+- `tests/` 改为标准测试包（新增 `tests/__init__.py` 注入 `scripts/` 到 sys.path），互测模块改为包内相对导入；Windows 子进程用例的工作目录同步指向 `scripts/`。
+- **导出侧二次掩码（D5 加固）**：`gaps --html` 能力视图与 `gaps` 表格、`cheatsheet` 在渲染前对课程名、章节/模块标题、资料文件名、题干与参考片段、笔记文本再执行一遍 `coach/pii.py` 的代码级掩码——入库掩码 + 导出掩码双层机制，堵住"文件名/标题不在提取文本中"的缝隙；新增 `tests/test_export_masking.py` 回归。
+- SKILL.md §7 新增**资料目录只读**承诺：脚本不修改/移动/删除任何原始资料文件，全部产物只写入 `exam-cram/` 子目录。
+- 版本号升至 1.9.0；升级沿用既有备份机制，绝不用 `--fresh` 重置学习进度。
+
+---
+
 # v1.8.0 · 判分策略固化与全新账号开箱即用
 
 - 新增 `coach/policy.py` + `templates/grading-policy.json` + `references/grading-policy.md`：把比赛期间协商的判分约定固化为默认产品配置（统一 10 分制、通过线 ≥8、单选/判断 10/0、多选 10/6/0、不定项按学生答案形态自动分流、提示=看答案/课件/AI/知识点四类）。全新账号无需再让宿主每次现发挥判分规则。

@@ -122,7 +122,7 @@ def quiz(args):
             flow["stage"] = "analysis"
             _save(ws, state)
             print("本轮可用题已完成；未测、资料阻塞和待人工核对分别保留。")
-            _foot(state, w, "python coach.py gaps")
+            _foot(state, w, "python scripts/coach.py gaps")
             return 0
         if getattr(args, "qid", None) and args.qid != remaining[0]:
             raise at.AttemptError("本轮按已冻结的摸底题序推进；不能直接替换其中一道。")
@@ -134,7 +134,7 @@ def quiz(args):
     else:
         if at.practice_break(state):
             print("连续错误已触发暂停刷题。先 next 补讲关键步骤，或结束本次；不会反复出错题。")
-            _foot(state, w, "python coach.py next")
+            _foot(state, w, "python scripts/coach.py next")
             return 4
         task = tasks.current(state)
         if task and task['phase'] in tasks.WAIT_PHASES:
@@ -168,7 +168,7 @@ def quiz(args):
                              "暂无本任务可独立验证的原题；不自动生成新题、不假定掌握。")
                 _save(ws, state)
                 print("当前任务已收束为待巩固/资料待补；其余任务可继续。")
-                _foot(state, w, "python coach.py task")
+                _foot(state, w, "python scripts/coach.py task")
                 return 0
         else:
             available = _available(ws, state, bank)
@@ -179,7 +179,7 @@ def quiz(args):
                 task = None
         if not q:
             print("没有可用原题：可能已超出范围、题目待补或今日次数已满。可补讲、暂缓或结束本次。")
-            _foot(state, w, "python coach.py session finish")
+            _foot(state, w, "python scripts/coach.py session finish")
             return 3
         if task:
             tasks.activate(state, task)
@@ -275,7 +275,7 @@ def check(args):
     _cli()._print_question(q, w, ws, with_answer=True)
     _cli()._remember_shown(ws, state)
     print("提交后的解析不会改变这次原答的独立性；今天再次做同题会标记为受助。")
-    _foot(state, w, "python coach.py grade %s" % q["id"] if a["status"] != "graded" else None)
+    _foot(state, w, "python scripts/coach.py grade %s" % q["id"] if a["status"] != "graded" else None)
     return 0
 
 
@@ -361,7 +361,7 @@ def grade(args):
             at.park(state, a)
             _save(ws, state)
             print("主观题原答已保存。判整题正确必须在作答前 rubric freeze，再 grade --rubric 核对完整冻结要点；自由文本结论不能跳过覆盖检查。")
-            _foot(state, w, "python coach.py check %s" % q["id"])
+            _foot(state, w, "python scripts/coach.py check %s" % q["id"])
             return 3
         source = "reference_manual"
     elif auto["verdict"] in ("right", "wrong", "partial"):
@@ -453,7 +453,7 @@ def plan(args):
             for i, task in enumerate(state["tasks"], 1):
                 print("%d. %s｜%s｜%s｜题号 %s" % (i, task["label"], task["status"], task["phase"], ",".join(task["qids"])))
         _save(ws, state)
-        _foot(state, w, "python coach.py next")
+        _foot(state, w, "python scripts/coach.py next")
         return 0
     if at.active(state):
         raise at.AttemptError("还有未结束的当前题。先提交并核对，或 defer 后再重排计划。")
@@ -502,7 +502,7 @@ def plan(args):
             print(line)
     elif len(state["tasks"]) > 1:
         print("另有 %d 项保存在任务队列；当前只执行第一项。" % (len(state["tasks"]) - 1))
-    _foot(state, w, "python coach.py next" if task else "python coach.py session finish")
+    _foot(state, w, "python scripts/coach.py next" if task else "python scripts/coach.py session finish")
     return 0
 
 
@@ -515,7 +515,7 @@ def next_step(args):
     if not task:
         if state.get("tasks"):
             print("本次计划已收束。待巩固和资料待补仍保留，不会自动循环刷题。")
-            _foot(state, w, "python coach.py session finish")
+            _foot(state, w, "python scripts/coach.py session finish")
             return 0
         state["support_at"] = at.stamp()
         _save(ws, state)
@@ -624,7 +624,7 @@ def chapter(args):
     parts = _cli().chapter_parts(chs[args.n], args.chars or state["slice_chars"])
     if not parts:
         print("该章无可提取正文，可能只有题库或扫描页。请补材料/核对原文件；不视为已讲完。")
-        _foot(state, w, "python coach.py task")
+        _foot(state, w, "python scripts/coach.py task")
         return 0
     if args.part is None:
         print("第%d章 %s｜%d个片段" % (args.n, chs[args.n].title, len(parts)))
@@ -667,7 +667,7 @@ def goto(args):
     tasks.activate(state, target)
     _save(ws, state)
     print("已切换到第%d章：%s；后续 next/quiz 将执行同一任务。" % (args.n, c["title"]))
-    _foot(state, w, "python coach.py next")
+    _foot(state, w, "python scripts/coach.py next")
     return 0
 
 
@@ -700,7 +700,7 @@ def done(args):
     _save(ws, state)
     print("第%d章已%s。" % (c["n"], "暂缓" if c["status"] == "deferred" else "结束"))
     print("本章有%d道当前独立正确证据；不代表全章或所有题型掌握。" % len(independent))
-    _foot(state, w, "python coach.py task" if tasks.current(state) else "python coach.py session finish")
+    _foot(state, w, "python scripts/coach.py task" if tasks.current(state) else "python scripts/coach.py session finish")
     return 0
 
 

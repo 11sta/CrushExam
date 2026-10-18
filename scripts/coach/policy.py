@@ -5,7 +5,7 @@ This is the single machine-readable source of the grading conventions the team
 agreed on (80% pass line, multi-select 10/6/0, single/true-false 10/0, and a
 hint taxonomy). The human-readable companion lives at
 `references/grading-policy.md`; the deployable JSON default lives at
-`templates/grading-policy.json`.
+`assets/grading-policy.json`.
 
 Policies are *product defaults*, not calibrated score probabilities. They let
 a brand-new account reproduce the same pass/score semantics without the host
@@ -23,7 +23,7 @@ import math
 
 POLICY_VERSION = "crushexam-policy-v1"
 
-# The single source of truth for defaults. `templates/grading-policy.json` is a
+# The single source of truth for defaults. `assets/grading-policy.json` is a
 # serializable copy of this so it can be audited / overridden per workspace.
 DEFAULT_POLICY = {
     "version": POLICY_VERSION,

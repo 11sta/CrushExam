@@ -13,6 +13,7 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tests"))
 from test_reliability_v160 import LESSON, HW
@@ -43,7 +44,7 @@ def main():
         return json.loads((ws / "quiz_bank.json").read_text(encoding="utf-8"))
 
     def call(*command, expected=0):
-        argv = [sys.executable, str(ROOT / "coach.py")]
+        argv = [sys.executable, str(ROOT / "scripts" / "coach.py")]
         if command[0] != "setup": argv += ["-w", str(ws)]
         argv += list(map(str, command))
         p = subprocess.run(argv, cwd=ROOT, env=env, capture_output=True, text=True, timeout=30)

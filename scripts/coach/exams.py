@@ -166,7 +166,8 @@ def get_active_workspace():
         return reg["exams"][aid]["workspace"]
     # Fall back to old pointer
     if os.path.exists(OLD_POINTER):
-        cand = open(OLD_POINTER, encoding="utf-8").read().strip()
+        with open(OLD_POINTER, encoding="utf-8") as fh:
+            cand = fh.read().strip()
         if cand and os.path.exists(cand):
             return cand
     return None
@@ -223,7 +224,8 @@ def migrate_old_pointer():
         return None
     if not os.path.exists(OLD_POINTER):
         return None
-    cand = open(OLD_POINTER, encoding="utf-8").read().strip()
+    with open(OLD_POINTER, encoding="utf-8") as fh:
+        cand = fh.read().strip()
     if not cand or not os.path.exists(cand):
         return None
     # Register the old workspace as "migrated_legacy"

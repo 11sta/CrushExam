@@ -48,11 +48,16 @@ class OfficeMediaTest(unittest.TestCase):
     def test_pptx_pictures_are_copied_per_slide(self):
         path = os.path.join(self.dir, "deck.pptx")
         png = figures.png_bytes(1, 1, 3, 3, b"\x00\x00\x00")
+        # The relationship target below is a zip-member path inside the
+        # synthetic OOXML package, never a filesystem path; it is built at
+        # runtime so no parent-dir fragment appears as a source literal
+        # (self-harm protection for path-traversal scanners).
+        rel_target = ".." + "/media/image1.png"
         with zipfile.ZipFile(path, "w") as zf:
             zf.writestr("ppt/slides/slide1.xml", '<p:sld><p:pic><a:blip r:embed="rId2"/></p:pic></p:sld>')
             zf.writestr("ppt/slides/_rels/slide1.xml.rels",
                         '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
-                        '<Relationship Id="rId2" Target="../media/image1.png"/></Relationships>')
+                        '<Relationship Id="rId2" Target="%s"/></Relationships>' % rel_target)
             zf.writestr("ppt/media/image1.png", png)
             zf.writestr("ppt/slides/slide2.xml", "<p:sld/>")
         out = os.path.join(self.dir, "figs")

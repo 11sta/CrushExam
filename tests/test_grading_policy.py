@@ -8,7 +8,7 @@ import unittest
 
 from coach import grading, policy
 
-from test_reliability_v160 import FlowFixture
+from .test_reliability_v160 import FlowFixture
 
 
 class PolicyUnitTests(unittest.TestCase):

@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 from unittest.mock import patch
 
-from test_reliability_v160 import FlowFixture
+from .test_reliability_v160 import FlowFixture
 from coach import attempts as at, tasks, assessment, blueprint, ability_view, evidence, state as st, questions
 
 

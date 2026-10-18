@@ -44,7 +44,7 @@ class CommandFlowTests(unittest.TestCase):
 
     def command(self, *args, expected=0):
         process = subprocess.run(
-            [sys.executable, str(ROOT / "coach.py"), *map(str, args)],
+            [sys.executable, str(ROOT / "scripts" / "coach.py"), *map(str, args)],
             cwd=str(ROOT), env=self.environment, capture_output=True,
             text=True, timeout=25,
         )
@@ -128,7 +128,7 @@ class CommandFlowTests(unittest.TestCase):
         check = self.command("check", first_qid)
         self.assertIn("参考答案", check)
         result = self.command("grade", first_qid, "--independent")
-        self.assertNotIn("python coach.py quiz", result)
+        self.assertNotIn("python scripts/coach.py quiz", result)
         updated = self.read_state(workspace)
         self.assertEqual(len(updated["history"]), 4)
         self.assertFalse(updated.get("open_quiz"))

@@ -223,7 +223,8 @@ def read_pptx(path):
 
 
 def read_text(path):
-    raw = open(path, "rb").read()
+    with open(path, "rb") as fh:
+        raw = fh.read()
     for enc in ("utf-8-sig", "gb18030", "latin-1"):
         try:
             text = raw.decode(enc)

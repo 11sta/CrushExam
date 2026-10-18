@@ -15,6 +15,18 @@ import time
 from . import __version__, ability_view, blueprint as bpmod, chapters as chmod, evidence as evmod, exams as exammod, extract, figures as figmod, grading as grademod, index as idx, planner as planmod, questions as qmod, state as st, usage_log as usemod
 from .text import is_mostly_cjk, pack, shorten
 from . import attempts as at, workflow as wf, tasks as taskmod, material_safety as safety
+from .pii import mask_pii
+
+
+def _mask(value):
+    """Second-pass masking of material-derived strings rendered into exported files.
+
+    Input-side masking already runs when materials enter the workspace; this
+    re-applies the same high-confidence patterns at the output boundary
+    (cheatsheet, ability tables) so nothing slips through via file names,
+    chapter titles or answer excerpts.
+    """
+    return mask_pii(str(value if value is not None else ""))[0]
 
 CHAPTERS_FILE = "chapters.json"
 BANK_FILE = "quiz_bank.json"
@@ -32,8 +44,8 @@ for _s in ("stdout", "stderr"):
 # ------------------------------------------------------------------ wording
 
 _T = {
-    "no_ws": ("找不到学习工作区。先运行：python coach.py setup <材料文件夹>",
-              "No study workspace found. Run: python coach.py setup <materials folder>"),
+    "no_ws": ("找不到学习工作区。先运行：python scripts/coach.py setup <材料文件夹>",
+              "No study workspace found. Run: python scripts/coach.py setup <materials folder>"),
     "setup_done": ("✅ 工作区已建好", "✅ Workspace ready"),
     "files": ("文件", "Files"),
     "chapters": ("章节", "Chapters"),
@@ -64,8 +76,8 @@ _T = {
     "mistakes": ("错题", "Mistakes"),
     "open": ("待复习", "open"),
     "confusions": ("疑难点", "Confusions"),
-    "all_done": ("🎉 所有章节都讲完了。可以复习错题（python coach.py mistakes）或生成小抄（python coach.py cheatsheet）。",
-                 "🎉 All chapters covered. Review mistakes (python coach.py mistakes) or build the cheat sheet (python coach.py cheatsheet)."),
+    "all_done": ("🎉 所有章节都讲完了。可以复习错题（python scripts/coach.py mistakes）或生成小抄（python scripts/coach.py cheatsheet）。",
+                 "🎉 All chapters covered. Review mistakes (python scripts/coach.py mistakes) or build the cheat sheet (python scripts/coach.py cheatsheet)."),
     "ch_end": ("本章正文已讲完。", "End of this chapter's text."),
     "ch_examples": ("本章相关题目", "Questions for this chapter"),
     "no_examples": ("材料里没有这一章的题目；保留未测，可补充资料原题，不自动编题。",
@@ -98,14 +110,14 @@ _T = {
     "cheatsheet_ok": ("小抄已写入", "Cheat sheet written to"),
     "search_none": ("材料中没有找到相关内容。请告诉学生「资料里没有这部分」，不要编造。",
                     "Nothing relevant found in the materials. Tell the student the materials do not cover this; do not invent."),
-    "hint_next": ("继续讲：python coach.py next", "Continue: python coach.py next"),
-    "hint_quiz": ("测验：python coach.py quiz", "Quiz: python coach.py quiz"),
-    "hint_done": ("讲完本章：python coach.py done", "Finish chapter: python coach.py done"),
-    "hint_ask": ("查资料：python coach.py ask \"关键词\"", "Look up: python coach.py ask \"keywords\""),
-    "hint_check": ("看答案：python coach.py check <题号>   记录：python coach.py answer <题号> right|wrong|skip",
-                   "Answer key: python coach.py check <id>   Record: python coach.py answer <id> right|wrong|skip"),
-    "hint_figure": ("整页/局部截图：python coach.py figure <文件> <页码> [--crop x0,y0,x1,y1]",
-                    "Page or region shot: python coach.py figure <file> <page> [--crop x0,y0,x1,y1]"),
+    "hint_next": ("继续讲：python scripts/coach.py next", "Continue: python scripts/coach.py next"),
+    "hint_quiz": ("测验：python scripts/coach.py quiz", "Quiz: python scripts/coach.py quiz"),
+    "hint_done": ("讲完本章：python scripts/coach.py done", "Finish chapter: python scripts/coach.py done"),
+    "hint_ask": ("查资料：python scripts/coach.py ask \"关键词\"", "Look up: python scripts/coach.py ask \"keywords\""),
+    "hint_check": ("看答案：python scripts/coach.py check <题号>   记录：python scripts/coach.py answer <题号> right|wrong|skip",
+                   "Answer key: python scripts/coach.py check <id>   Record: python scripts/coach.py answer <id> right|wrong|skip"),
+    "hint_figure": ("整页/局部截图：python scripts/coach.py figure <文件> <页码> [--crop x0,y0,x1,y1]",
+                    "Page or region shot: python scripts/coach.py figure <file> <page> [--crop x0,y0,x1,y1]"),
     "goto_ok": ("已切换到第", "Switched to chapter"),
     "material_label": ("🟢 以下为资料原文（讲解时请注明出处）", "🟢 Material text follows (cite the source when teaching)"),
     "guessed": ("章节为自动推测", "chapter guessed automatically"),
@@ -117,13 +129,13 @@ _T = {
     "plan_last": ("最后一天：复习错题（mistakes --answers）并生成小抄（cheatsheet）", "Last day: review mistakes (mistakes --answers) and build the cheat sheet (cheatsheet)"),
     "plan_today": ("今天目标", "Today's target"),
     "plan_loop": ("每章流程：next 讲完 → quiz → note --type summary → done", "Per chapter: next until the text ends → quiz → note --type summary → done"),
-    "plan_no_days": ("没有设置考试日期。设置：python coach.py plan --days N", "No exam date set. Set it: python coach.py plan --days N"),
+    "plan_no_days": ("没有设置考试日期。设置：python scripts/coach.py plan --days N", "No exam date set. Set it: python scripts/coach.py plan --days N"),
     "plan_done": ("所有章节已完成，只剩复习错题和小抄。", "All chapters done; only mistakes and the cheat sheet are left."),
     "export_ok": ("已复制 %d 张图到 %s（用下面的相对路径嵌入）", "Copied %d figure(s) to %s (embed the relative paths below)"),
     "export_none": ("没有可导出的图：先运行 next / quiz / check 列出图，或用 --qid / --chapter 指定。",
                     "Nothing to export: run next / quiz / check first, or pass --qid / --chapter."),
-    "export_hint": ("聊天界面不显示这些图片时：python coach.py export --to <打开的工作区或宿主 artifact 目录>，再用它打印的相对路径嵌入",
-                    "If your chat cannot render these paths: python coach.py export --to <open workspace or the host's artifact folder>, then embed the printed relative paths"),
+    "export_hint": ("聊天界面不显示这些图片时：python scripts/coach.py export --to <打开的工作区或宿主 artifact 目录>，再用它打印的相对路径嵌入",
+                    "If your chat cannot render these paths: python scripts/coach.py export --to <open workspace or the host's artifact folder>, then embed the printed relative paths"),
     # --- CrushExam new strings ---
     "exams_head": ("已注册考试", "Registered exams"),
     "exams_active": ("★活跃", "active"),
@@ -156,16 +168,16 @@ _T = {
     "grade_manual_subj": ("这是主观题，无法自动判分。请对照参考答案按要点自评，再用 answer 记录 right|wrong。", "This is a subjective question; it cannot be auto-graded. Compare with the reference, then record via answer right|wrong."),
     "grade_missing": ("少选了", "missing"),
     "grade_wrong_pick": ("错选了", "wrong pick"),
-    "grade_hint": ("自动判分：python coach.py grade <题号> \"<你的答案>\" [--independent]", "Auto-grade: python coach.py grade <qid> \"<your answer>\" [--independent]"),
+    "grade_hint": ("自动判分：python scripts/coach.py grade <题号> \"<你的答案>\" [--independent]", "Auto-grade: python scripts/coach.py grade <qid> \"<your answer>\" [--independent]"),
     "submit_ok": ("已提交作答（未判分、未揭晓）", "Answer submitted (not graded, not revealed)"),
     "your_answer": ("你的作答", "Your answer"),
-    "submit_hint": ("现在可以查看解答：python coach.py check <题号>，随后用 grade/answer 记录判分结果", "Now you may reveal: python coach.py check <qid>, then record the verdict via grade/answer"),
+    "submit_hint": ("现在可以查看解答：python scripts/coach.py check <题号>，随后用 grade/answer 记录判分结果", "Now you may reveal: python scripts/coach.py check <qid>, then record the verdict via grade/answer"),
     "check_blocked": ("⛔ 先交后查：这题已出示但你还没提交作答。先 submit 你的答案，再查看解答。", "⛔ Answer-first: this question is open but no answer was submitted. Run submit first, then check."),
     "grade_need_answer": ("没有待判作答。先 submit 你的答案，或直接 grade <题号> \"<答案>\"。", "No pending answer. submit your answer first, or call grade <qid> \"<answer>\"."),
     "grade_from_pending": ("（使用已提交的作答判分）", "(graded from the submitted answer)"),
     "answer_stop": ("本轮作答已记录。下一步由你选择：继续当前任务 / 下一题 / 查看任务清单", "Recorded. Your choice next: continue the current task / next question / view the task list"),
     "review_sameday": ("⚠️ 同日复测：与上次作答同一天，不计为延迟独立（按即时记录）。真正的延迟复测需隔天。", "⚠️ Same-day re-test: not counted as delayed (recorded as immediate). A delayed re-test must happen on a later day."),
-    "diagnose_first": ("下一步: python coach.py quiz --stratified -n 6  （入口必经：先小规模分层诊断 → gaps → plan，再开始讲课，不要直接 next）", "Next: python coach.py quiz --stratified -n 6  (entry path: stratified diagnosis → gaps → plan BEFORE teaching; do not jump to next)"),
+    "diagnose_first": ("下一步: python scripts/coach.py quiz --stratified -n 6  （入口必经：先小规模分层诊断 → gaps → plan，再开始讲课，不要直接 next）", "Next: python scripts/coach.py quiz --stratified -n 6  (entry path: stratified diagnosis → gaps → plan BEFORE teaching; do not jump to next)"),
     "blueprint_head": ("考试蓝图", "Exam blueprint"),
     "blueprint_none": ("还没有考试蓝图。构建方法：把课程的 KC 词典（知识点+关键词）写成 JSON，然后 blueprint --file kc-dict.json 导入；格式见 references/blueprint-kc-dictionary.md。", "No blueprint yet. Write the course KC dictionary (knowledge components + keywords) as JSON and import it: blueprint --file kc-dict.json; format: references/blueprint-kc-dictionary.md"),
     "blueprint_structure": ("考试结构", "Exam structure"),
@@ -278,15 +290,15 @@ def _gate_study(state, w):
     if stage == "diagnosing":
         print(("先完成摸底（剩余 %d 题）；然后看能力分析与首轮计划。" % len(_diagnosis_remaining(state))) if w.zh else
               "Finish diagnosis first, then inspect your ability view and first plan.")
-        print(footer(state, w, "python coach.py quiz --stratified"))
+        print(footer(state, w, "python scripts/coach.py quiz --stratified"))
         return False
     if stage in ("analysis", "planning"):
         print("先查看能力缺口并确认首轮计划。" if w.zh else "Review your gaps and first plan before continuing.")
-        print(footer(state, w, "python coach.py gaps" if stage == "analysis" else "python coach.py plan"))
+        print(footer(state, w, "python scripts/coach.py gaps" if stage == "analysis" else "python scripts/coach.py plan"))
         return False
     if stage not in ("planned", "studying"):
         print("阶段暂停或异常，先恢复；不会默认放行。")
-        print(footer(state, w, "python coach.py session recover"))
+        print(footer(state, w, "python scripts/coach.py session recover"))
         return False
     return True
 
@@ -325,7 +337,8 @@ def resolve_workspace(explicit):
     if os.path.exists(st.path("exam-cram")):
         return os.path.abspath("exam-cram")
     if os.path.exists(POINTER):
-        cand = open(POINTER, encoding="utf-8").read().strip()
+        with open(POINTER, encoding="utf-8") as fh:
+            cand = fh.read().strip()
         if cand and os.path.exists(st.path(cand)):
             return cand
     return None
@@ -737,7 +750,7 @@ def cmd_setup(args):
         print(w("diagnose_first"))
     else:
         next_step = {"analysis": "gaps", "planning": "plan"}.get(_stage(state), "status")
-        print(w("next_steps") + ": python coach.py " + next_step)
+        print(w("next_steps") + ": python scripts/coach.py " + next_step)
     return 0
 
 
@@ -825,7 +838,7 @@ def _legacy_next(args):
         _print_examples(w, ws, bank, cur["n"])
         print("%s | %s" % (w("hint_quiz"), w("hint_done")))
         st.save(ws, state)
-        print(footer(state, w, "python coach.py quiz"))
+        print(footer(state, w, "python scripts/coach.py quiz"))
         return 0
     if k >= len(parts):
         print("=== %s (%s %d/%d) ===" % (head, w("part"), len(parts), len(parts)))
@@ -833,7 +846,7 @@ def _legacy_next(args):
         _print_examples(w, ws, bank, cur["n"])
         print("%s | %s" % (w("hint_quiz"), w("hint_done")))
         st.save(ws, state)
-        print(footer(state, w, "python coach.py quiz"))
+        print(footer(state, w, "python scripts/coach.py quiz"))
         return 0
     print("=== %s (%s %d/%d) ===" % (head, w("part"), k + 1, len(parts)))
     print(w("material_label"))
@@ -858,10 +871,10 @@ def _legacy_next(args):
         print("")
         _print_examples(w, ws, bank, cur["n"])
         print("%s | %s" % (w("hint_quiz"), w("hint_done")))
-        next_cmd = "python coach.py quiz"
+        next_cmd = "python scripts/coach.py quiz"
     else:
         print("\n%s | %s" % (w("hint_next"), w("hint_ask")))
-        next_cmd = "python coach.py next"
+        next_cmd = "python scripts/coach.py next"
     if _SHOWN:
         state["last_figures"] = list(dict.fromkeys(_SHOWN))
     st.save(ws, state)
@@ -895,7 +908,7 @@ def cmd_ask(args):
             print("  🖼 " + full)
         print("")
     _remember_shown(ws, state)
-    print(footer(state, w, "python coach.py next"))
+    print(footer(state, w, "python scripts/coach.py next"))
     return 0
 
 
@@ -980,7 +993,7 @@ def cmd_note(args):
     st.save(ws, state)
     print("%s (ch%s, %s)" % (w("note_ok"), n, args.type))
     cur = st.chapter(state)
-    nxt = "python coach.py done" if (args.type == "summary" and cur and cur["part"] >= cur["parts"]) else "python coach.py next"
+    nxt = "python scripts/coach.py done" if (args.type == "summary" and cur and cur["part"] >= cur["parts"]) else "python scripts/coach.py next"
     print(footer(state, w, nxt))
     return 0
 
@@ -1008,7 +1021,7 @@ def cmd_mistakes(args):
         for eid, m in all_om:
             mark = " *" if eid == state.get("exam_id") else ""
             print("  [%s%s] %s x%d ch%d %s" % (eid, mark, m["qid"], m["count"], m.get("chapter", 0), m.get("note", "")))
-        print(footer(state, w, "python coach.py quiz"))
+        print(footer(state, w, "python scripts/coach.py quiz"))
         return 0
     if not om:
         print(w("no_mistakes"))
@@ -1023,29 +1036,29 @@ def cmd_mistakes(args):
         print("")
     print(w("hint_check"))
     _remember_shown(ws, state)
-    print(footer(state, w, "python coach.py answer %s right|wrong|skip" % om[0]["qid"]))
+    print(footer(state, w, "python scripts/coach.py answer %s right|wrong|skip" % om[0]["qid"]))
     return 0
 
 
 def cmd_cheatsheet(args):
     ws, state, w = load_ws(args)
     bank = load_bank(ws)
-    out = [("# %s 考前小抄" if w.zh else "# %s cheat sheet") % state["course"], ""]
+    out = [("# %s 考前小抄" if w.zh else "# %s cheat sheet") % _mask(state["course"]), ""]
     for c in state["chapters"]:
         notes = [n for n in state["notes"] if n["chapter"] == c["n"]]
         mist = [m for m in state["mistakes"] if m["chapter"] == c["n"]]
         if not notes and not mist:
             continue
-        out.append("## %d. %s" % (c["n"], c["title"]))
+        out.append("## %d. %s" % (c["n"], _mask(c["title"])))
         for n in notes:
             if n["type"] == "summary":
-                out.append(n["text"])
+                out.append(_mask(n["text"]))
                 out.append("")
         conf = [n for n in notes if n["type"] == "confusion"]
         if conf:
             out.append("**%s**" % ("疑难点" if w.zh else "Confusions"))
             for n in conf:
-                out.append("- " + n["text"])
+                out.append("- " + _mask(n["text"]))
             out.append("")
         if mist:
             out.append("**%s**" % ("错题" if w.zh else "Mistakes"))
@@ -1053,14 +1066,14 @@ def cmd_cheatsheet(args):
                 q = _find_q(bank, m["qid"])
                 if not q:
                     continue
-                out.append("- [%s] %s" % (m["qid"], shorten(q["question"] or q["source"].get("head", ""), 200)))
+                out.append("- [%s] %s" % (m["qid"], _mask(shorten(q["question"] or q["source"].get("head", ""), 200))))
                 for p in q.get("figures") or []:
                     out.append("  ![](%s)" % p)
                 if q["answer"]:
                     src = q.get("answer_source") or q["source"]
-                    out.append("  - 🟢 %s: %s (%s p.%s)" % (w("ref_answer"), shorten(q["answer"], 300), src["file"], src["page"]))
+                    out.append("  - 🟢 %s: %s (%s p.%s)" % (w("ref_answer"), _mask(shorten(q["answer"], 300)), _mask(src["file"]), src["page"]))
                 if m.get("note"):
-                    out.append("  - " + m["note"])
+                    out.append("  - " + _mask(m["note"]))
             out.append("")
     dest = args.out or os.path.join(ws, "cheatsheet.md")
     with open(dest, "w", encoding="utf-8") as fh:
@@ -1207,7 +1220,7 @@ def cmd_exams(args):
         print("  %s  %s  %s  %s  [%s/%s]%s" % (
             e["exam_id"], e["course"], date_str, etype, goal, e.get("weekly_hours", "?"), mark))
     print("")
-    print("python coach.py switch <exam_id>  |  python coach.py setup <folder> --exam <new_id>")
+    print("python scripts/coach.py switch <exam_id>  |  python scripts/coach.py setup <folder> --exam <new_id>")
     return 0
 
 
@@ -1227,7 +1240,7 @@ def cmd_switch(args):
         done = sum(1 for c in state["chapters"] if c["status"] in ("done", "verified"))
         total = len(state["chapters"])
         print("%s: %s %d/%d" % (w("progress"), st.bar(done, total), done, total))
-    print(w("next_steps") + ": python coach.py status")
+    print(w("next_steps") + ": python scripts/coach.py status")
     return 0
 
 
@@ -1249,7 +1262,7 @@ def cmd_score(args):
         s = state.get("post_exam_score")
         if not s:
             print(w("score_none"))
-            print(footer(state, w, "python coach.py score --score 85 --max 100"))
+            print(footer(state, w, "python scripts/coach.py score --score 85 --max 100"))
             return 0
         print("=== %s ===" % w("score_show"))
         print("  %s: %s/%s  (%s: %s)  %s" % (
@@ -1259,7 +1272,7 @@ def cmd_score(args):
         if s.get("note"):
             print("  %s: %s" % ("备注" if w.zh else "Note", s["note"]))
         print("  %s" % w("score_warning"))
-        print(footer(state, w, "python coach.py status"))
+        print(footer(state, w, "python scripts/coach.py status"))
         return 0
     # Record a new score
     max_score = args.max if args.max is not None else 100.0
@@ -1281,7 +1294,7 @@ def cmd_score(args):
     if args.note:
         print("  %s: %s" % ("备注" if w.zh else "Note", args.note))
     print(w("score_warning"))
-    print(footer(state, w, "python coach.py status"))
+    print(footer(state, w, "python scripts/coach.py status"))
     return 0
 
 
@@ -1300,7 +1313,7 @@ HELP_ZH = """CrushExam：先摸底，后分析，再制定计划；每次只展�
   workbench | import-answer <JSON> | verify-transfer <目标qid> <基题qid> --kc ... --kind parameter|representation|context --basis ... --confirmed
   rubric draft|freeze|ratings <qid> | verify-reason <qid>  (see -h)
   cheatsheet | score | usage | export | figures | figure | doctor
-使用 python coach.py <命令> -h 查看参数。积分消耗请以实际账户明细为准。"""
+使用 python scripts/coach.py <命令> -h 查看参数。积分消耗请以实际账户明细为准。"""
 
 HELP_EN = """CrushExam: diagnose, inspect evidence, plan, then study; one question at a time.
   setup <materials> [--exam ID] [--date YYYY-MM-DD] [--goal pass|high|long] [--minutes N]
@@ -1317,7 +1330,7 @@ HELP_EN = """CrushExam: diagnose, inspect evidence, plan, then study; one questi
   workbench | import-answer <JSON> | verify-transfer <target> <base> --kc ... --kind parameter|representation|context --basis ... --confirmed
   rubric draft|freeze|ratings <qid> | verify-reason <qid>  (see -h)
   cheatsheet | score | usage | export | figures | figure | doctor
-Use python coach.py <command> -h for all flags. For credits, rely on the host's bill."""
+Use python scripts/coach.py <command> -h for all flags. For credits, rely on the host's bill."""
 
 
 def cmd_blueprint(args):
@@ -1367,7 +1380,7 @@ def cmd_blueprint(args):
     print("=== %s ===" % w("blueprint_head"))
     if not bp.get("kcs"):
         print(w("blueprint_none"))
-        print(footer(state, w, "python coach.py quiz --stratified" if _stage(state) == "diagnosing" else "python coach.py gaps"))
+        print(footer(state, w, "python scripts/coach.py quiz --stratified" if _stage(state) == "diagnosing" else "python scripts/coach.py gaps"))
         return 0
     if state.get("exam_id"):
         print("exam: %s | course: %s" % (state["exam_id"], state["course"]))
@@ -1395,7 +1408,7 @@ def cmd_blueprint(args):
     print("%s: %d/%d 题（%.0f%%）" % (w("blueprint_coverage"), cov["mapped"], cov["total"], pct))
     if cov["unmapped"]:
         print("%s: %s" % (w("blueprint_unmapped"), ", ".join(cov["unmapped"][:12]) + (" …" if len(cov["unmapped"]) > 12 else "")))
-    print(footer(state, w, "python coach.py quiz --stratified" if _stage(state) == "diagnosing" else "python coach.py gaps"))
+    print(footer(state, w, "python scripts/coach.py quiz --stratified" if _stage(state) == "diagnosing" else "python scripts/coach.py gaps"))
     return 0
 
 
@@ -1424,7 +1437,7 @@ def _legacy_gaps(args):
     print("模块 | 最近证据 | 已测/题库 | 说明")
     print("--- | --- | --- | ---")
     for r in show:
-        label = shorten(r["title"], 26).replace("|", "/")
+        label = shorten(_mask(r["title"]), 26).replace("|", "/")
         status = bpmod.strength_label(r["strength"], w.zh)
         print("%s | %s | %d/%d | 错/跳 %d、独立对 %d、未测 %d" % (
             label, status, r["tested"], r["total"], r["wrong"], r["indep_right"], r["untested"]))
@@ -1444,7 +1457,7 @@ def _legacy_gaps(args):
     if _stage(state) == "analysis":
         state["workflow"]["stage"] = "planning"
         st.save(ws, state)
-    print(footer(state, w, "python coach.py plan"))
+    print(footer(state, w, "python scripts/coach.py plan"))
     return 0
 
 
@@ -1509,7 +1522,7 @@ def cmd_usage(args):
     print("⚠️ " + w("usage_note_1"))
     print("⚠️ " + w("usage_note_2"))
     print("💡 " + w("usage_note_3"))
-    print(footer(state, w, "python coach.py status"))
+    print(footer(state, w, "python scripts/coach.py status"))
     return 0
 
 
@@ -1594,7 +1607,7 @@ def cmd_help(args):
 # ------------------------------------------------------------------ parser
 
 def build_parser():
-    p = argparse.ArgumentParser(prog="coach.py", description="CrushExam", add_help=True)
+    p = argparse.ArgumentParser(prog="scripts/coach.py", description="CrushExam", add_help=True)
     p.add_argument("--workspace", "-w", help="study workspace (default: active exam workspace)")
     sub = p.add_subparsers(dest="cmd")
 

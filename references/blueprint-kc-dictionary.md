@@ -12,7 +12,7 @@ AIGC:
 # 考试蓝图与 KC 词典（blueprint-kc-dictionary.md）
 
 > 支持文档：如何为某门课建立「考试蓝图」，让分层诊断（`quiz --stratified`）和知识点能力表（`gaps`）按知识点工作。
-> 与 SKILL.md §1a/§3/§6 配套；本文件描述数据格式与构建流程，命令行为以 `python coach.py blueprint --help` 为准。
+> 与 SKILL.md §1a/§3/§6 配套；本文件描述数据格式与构建流程，命令行为以 `python scripts/coach.py blueprint --help` 为准。
 
 ## 1. 蓝图是什么
 
@@ -25,9 +25,9 @@ AIGC:
 ## 2. 快速流程
 
 1. 从课程资料（笔记目录/PPT 目录/考纲）列出知识点 → 写成 JSON 文件，建议放资料夹根目录 `kc-dict.json`（re-setup 会自动重新导入，见 §4）。
-2. `python coach.py blueprint --file kc-dict.json` → 自动建映射并打印覆盖情况。
-3. `python coach.py blueprint --kcs` 查看全部知识点；`blueprint --qmap q_xxx:kc1+kc2` 修正明显误标。
-4. `python coach.py gaps` 看知识点能力表；`python coach.py quiz --stratified -n 6` 做分层诊断。
+2. `python scripts/coach.py blueprint --file kc-dict.json` → 自动建映射并打印覆盖情况。
+3. `python scripts/coach.py blueprint --kcs` 查看全部知识点；`blueprint --qmap q_xxx:kc1+kc2` 修正明显误标。
+4. `python scripts/coach.py gaps` 看知识点能力表；`python scripts/coach.py quiz --stratified -n 6` 做分层诊断。
 
 ## 3. 文件格式
 

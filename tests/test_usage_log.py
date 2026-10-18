@@ -9,7 +9,7 @@ import sys
 import tempfile
 import unittest
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts"))
 
 from coach import cli  # noqa: E402
 from coach import state as st  # noqa: E402
@@ -75,11 +75,32 @@ class UsageLogModuleTest(unittest.TestCase):
         self.assertEqual(rep["heaviest"][0]["session_id"], "ses_ccc")
 
     def test_summarize_days_window_filters(self):
-        sessions = usemod.load_log(self.log)
-        # 1-day window keeps only the 09-28 session
+        # Dates relative to today so the window semantics stay testable on any
+        # run date (the shared LOG fixture uses fixed 2026-09 dates).
+        import datetime as dt
+        today = dt.date.today()
+        dyn = {"sessions": {
+            "ses_now": {"totalCalls": 5, "seenCallIds": ["a"] * 5,
+                        "updatedAt": today.isoformat() + "T08:00:00.000Z"},
+            "ses_old": {"totalCalls": 3, "seenCallIds": ["b"] * 3,
+                        "updatedAt": (today - dt.timedelta(days=3)).isoformat() + "T08:00:00.000Z"},
+            "ses_ancient": {"totalCalls": 2, "seenCallIds": ["c"] * 2,
+                            "updatedAt": (today - dt.timedelta(days=40)).isoformat() + "T08:00:00.000Z"},
+        }}
+        dyn_path = os.path.join(self.dir, "dyn-log.json")
+        with open(dyn_path, "w", encoding="utf-8") as fh:
+            json.dump(dyn, fh, ensure_ascii=False)
+        sessions = usemod.load_log(dyn_path)
+        # 1-day window keeps only today's session
         rep = usemod.summarize(sessions, days=1)
         self.assertEqual(rep["sessions_total"], 1)
-        rep_all = usemod.summarize(sessions, days=30)
+        self.assertEqual(rep["calls_total"], 5)
+        # 30-day window keeps today + 3 days ago, drops the 40-day-old one
+        rep30 = usemod.summarize(sessions, days=30)
+        self.assertEqual(rep30["sessions_total"], 2)
+        self.assertEqual(rep30["calls_total"], 8)
+        # no window keeps everything
+        rep_all = usemod.summarize(sessions)
         self.assertEqual(rep_all["sessions_total"], 3)
 
     def test_estimate_ocr_counts_images(self):

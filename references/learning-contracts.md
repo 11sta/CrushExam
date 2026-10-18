@@ -5,15 +5,15 @@
 ## 1. 主观题：先冻结完整要求，后提交和判分
 
 ```bash
-python coach.py -w <工作区> rubric draft <qid> --out <内部草案.json>
+python scripts/coach.py -w <工作区> rubric draft <qid> --out <内部草案.json>
 # 教练在看到学生原答之前，对照完整题目和参考核对草案：
 # 逐项定义id/label/reference_quote，不带status；coverage_confirmed改为true。
-python coach.py -w <工作区> rubric freeze <qid> --file <内部草案.json>
-python coach.py -w <工作区> quiz --qid <qid>
-python coach.py -w <工作区> submit <qid> "学生逐字原答"
-python coach.py -w <工作区> rubric ratings <qid> --out <内部评分记录.json>
+python scripts/coach.py -w <工作区> rubric freeze <qid> --file <内部草案.json>
+python scripts/coach.py -w <工作区> quiz --qid <qid>
+python scripts/coach.py -w <工作区> submit <qid> "学生逐字原答"
+python scripts/coach.py -w <工作区> rubric ratings <qid> --out <内部评分记录.json>
 # 只填写每项status；met/partial须用student_quote引用首次原答。
-python coach.py -w <工作区> grade <qid> --rubric <内部评分记录.json>
+python scripts/coach.py -w <工作区> grade <qid> --rubric <内部评分记录.json>
 ```
 
 `draft` 包含真实题号、题干版本、答案版本、完整题目、参考来源和初始分段。`freeze` 要求所有参考文字被要点引用覆盖，避免只剩判空却漏判满和用途；覆盖校验忽略常规空白与标点，保留运算符。分段不是学科语义识别。教练必须核对题目是否还包含参考未回答的问项；资料不完整就保持未核验，不能点确认后假称有完整标准答案。
@@ -48,8 +48,8 @@ python coach.py -w <工作区> grade <qid> --rubric <内部评分记录.json>
 ```
 
 ```bash
-python coach.py -w <工作区> task note --note "学生刚才补出的步骤"
-python coach.py -w <工作区> task assess --step-id <工具返回id> --verdict met \
+python scripts/coach.py -w <工作区> task note --note "学生刚才补出的步骤"
+python scripts/coach.py -w <工作区> task assess --step-id <工具返回id> --verdict met \
   --quote "刚才原话的实际片段" --reference-quote "原参考片段" --note "这一步为何符合参考"
 ```
 
@@ -60,7 +60,7 @@ python coach.py -w <工作区> task assess --step-id <工具返回id> --verdict 
 带解释的原答、低置信度正确选项会保留 right 和原始选项信用，同时记录方法 pending。程序只识别“需要核对解释”，不自动判断长文本理由真假。无理由的高置信度正确也只说明该题正确，不能报告方法全面掌握。
 
 ```bash
-python coach.py -w <工作区> verify-reason <qid> --attempt <原作答id> \
+python scripts/coach.py -w <工作区> verify-reason <qid> --attempt <原作答id> \
   --verdict met --quote "首次原答中的解释片段" \
   --reference-quote "本题参考中的真实解释" --note "逐步核对说明"
 ```
@@ -75,9 +75,9 @@ verdict 可为 met/incorrect/uncertain。只有原答有实际理由、参考有
 - `transfer_kind` 为 parameter/representation/context/unclassified，依教练核对题目后明确声明分类；不自动把参数变化升级为情境迁移。
 
 ```bash
-python coach.py -w <工作区> verify-transfer <目标qid> <基题qid> --kc <已核对知识点id> \
+python scripts/coach.py -w <工作区> verify-transfer <目标qid> <基题qid> --kc <已核对知识点id> \
   --kind parameter --basis "两题规则相同，具体哪些参数发生变化" --confirmed
-python coach.py -w <工作区> grade <目标qid> --transfer-from <基题qid>
+python scripts/coach.py -w <工作区> grade <目标qid> --transfer-from <基题qid>
 ```
 
 题号和来源必须真实、目标题未有旧作答或提交前解答暴露、基题最近有有效独立成功。题干/答案改变使关系失效。目标此前跨日看过解答、基题最近失败或方法仍待核验，都不升级异题证据。普通判分仍有出口，不必为了迁移标签卡住学习。
@@ -92,7 +92,7 @@ python coach.py -w <工作区> grade <目标qid> --transfer-from <基题qid>
 
 ## 6. 判分策略与题级分值（v1.8）
 
-判分约定集中写在 `grading-policy.md`（人读）与 `coach/policy.py` + `templates/grading-policy.json`（机器读）。默认 10 分制、通过线 80%（≥8）。
+判分约定集中写在 `grading-policy.md`（人读）与 `scripts/coach/policy.py` + `assets/grading-policy.json`（机器读）。默认 10 分制、通过线 80%（≥8）。
 
 **分值只落在题级，不落在要点级**（继续防止教练拆分的要点冒充教师分值）。冻结契约的顶层可携带 `scoring`：
 

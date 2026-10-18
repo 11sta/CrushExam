@@ -1,18 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""CrushExam TeleAgent skill packager.
+"""CrushExam TeleAgent skill packager (v1.9 standard layout).
 
 Produces a ZIP with SKILL.md at the root (no wrapping directory),
-excluding __pycache__, tests, samples, and other dev-only files.
+matching the TeleAgent skill standard layout:
+    SKILL.md / scripts / references / assets / tests
+
+The repo keeps extra dev-only items (samples/, validation/, agents/,
+release.py, root README.md for the GitHub landing page); none of
+them enter the ZIP.
 
 Usage:
-    python release.py              # -> crushexam-teleagent.zip in cwd
+    python release.py              # -> crushexam-teleagent-v<version>.zip in cwd
     python release.py --check      # verify structure + size only
     python release.py --out X.zip  # custom output path
 """
 import argparse
 import hashlib
 import os
+import re
 import sys
 import zipfile
 
@@ -26,26 +32,36 @@ def _sha256(path):
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
-# Files/dirs to include in the release ZIP
+# Files/dirs to include in the release ZIP (v1.9 standard layout)
 INCLUDE_FILES = [
     "SKILL.md",
-    "coach.py",
-    "LICENSE",
-    "CHANGELOG.md",
-    "MANIFEST.sha256",
 ]
 INCLUDE_DIRS = [
-    "coach",        # all .py files, excluding __pycache__
-    "references",   # support docs referenced from SKILL.md
-    "templates",    # workbench.html (offline one-question UI)
-    "scripts",      # repeatable release-validation scripts
-    "agents",       # host manifest
+    "scripts",      # coach.py entry, coach/ package, validators, MANIFEST.sha256
+    "references",   # support docs (README/CHANGELOG/LICENSE live here since v1.9)
+    "assets",       # grading-policy.json + workbench.html (offline one-question UI)
+    "tests",        # standard test package (has __init__.py, self-contained)
 ]
 
 # Excluded patterns (relative paths starting with these are skipped)
-EXCLUDE_DIRS = {"__pycache__", ".pytest_cache", "tests", "samples", ".git",
+EXCLUDE_DIRS = {"__pycache__", ".pytest_cache", "samples", ".git",
                 "figures", "validation", "CrushExam_TeleAgent"}
 EXCLUDE_EXTS = {".pyc", ".pyo", ".tmp", ".log", ".egg-info", ".zip"}
+
+# Where the checksum manifest lives in the v1.9 layout
+MANIFEST_REL = "scripts/MANIFEST.sha256"
+
+
+def read_version():
+    """Read metadata.version from SKILL.md (e.g. "1.9.0")."""
+    with open(os.path.join(ROOT, "SKILL.md"), encoding="utf-8") as fh:
+        for line in fh:
+            m = re.search(r'version:\s*"([^"]+)"', line)
+            if m:
+                return m.group(1)
+            if not line.strip():
+                break
+    return "unknown"
 
 
 def should_exclude(rel_path):
@@ -97,21 +113,21 @@ def build_zip(out_path):
     if not has_skill:
         print("ERROR: SKILL.md not found — cannot build ZIP", file=sys.stderr)
         return 1
-    # Auto-refresh MANIFEST.sha256 so it always matches the packaged content
-    # (previous hash entries go stale whenever files change).
-    manifest_rels = [rel for _, rel in files if rel != "MANIFEST.sha256"]
-    manifest_path = os.path.join(ROOT, "MANIFEST.sha256")
+    # Auto-refresh scripts/MANIFEST.sha256 so it always matches the packaged
+    # content (previous hash entries go stale whenever files change).
+    manifest_path = os.path.join(ROOT, *MANIFEST_REL.split("/"))
     lines = []
     for full, rel in sorted(files, key=lambda x: x[1]):
-        if rel == "MANIFEST.sha256":
+        if rel == MANIFEST_REL:
             continue
         h = _sha256(full)
         lines.append("%s  %s" % (h, rel))
-    with open(manifest_path, "w", encoding="ascii") as fh:
+    os.makedirs(os.path.dirname(manifest_path), exist_ok=True)
+    with open(manifest_path, "w", encoding="ascii", newline="\n") as fh:
         fh.write("\n".join(lines) + "\n")
     files = collect_files()  # re-collect: MANIFEST now exists
-    files = [f for f in files if f[1] != "MANIFEST.sha256"] + \
-            [(manifest_path, "MANIFEST.sha256")]
+    files = [f for f in files if f[1] != MANIFEST_REL] + \
+            [(manifest_path, MANIFEST_REL)]
     with zipfile.ZipFile(out_path, "w", zipfile.ZIP_DEFLATED) as zf:
         for full, rel in sorted(files, key=lambda x: x[1]):
             zf.write(full, rel)
@@ -128,7 +144,8 @@ def build_zip(out_path):
     # Check SKILL.md is at root (no directory prefix)
     skill_ok = "SKILL.md" in names
     print("SKILL.md at root: %s" % ("OK" if skill_ok else "FAIL"))
-    return 0 if skill_ok else 1
+    print("MANIFEST in ZIP: %s" % ("OK" if MANIFEST_REL in names else "FAIL"))
+    return 0 if skill_ok and MANIFEST_REL in names else 1
 
 
 def check_only():
@@ -148,12 +165,13 @@ def check_only():
 
 def main(argv=None):
     p = argparse.ArgumentParser(description="CrushExam TeleAgent skill packager")
-    p.add_argument("--out", default="crushexam-teleagent.zip", help="output ZIP path")
+    p.add_argument("--out", default=None, help="output ZIP path (default: crushexam-teleagent-v<version>.zip)")
     p.add_argument("--check", action="store_true", help="check structure without building ZIP")
     args = p.parse_args(argv)
     if args.check:
         return check_only()
-    return build_zip(args.out)
+    out = args.out or "crushexam-teleagent-v%s.zip" % read_version()
+    return build_zip(out)
 
 
 if __name__ == "__main__":
