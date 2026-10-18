@@ -217,4 +217,5 @@ python scripts/coach.py doctor                  # 环境自检
 - 无 Python 执行能力时只能受限对话教学，不能声称状态已保存或判分已运行
 
 ## License
-MIT
+
+MIT，见 `references/LICENSE`
