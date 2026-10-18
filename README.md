@@ -1,14 +1,3 @@
----
-AIGC:
-  ContentProducer: '001191110102MAD55U9H0F10002'
-  ContentPropagator: '001191110102MAD55U9H0F10002'
-  Label: '1'
-  ProduceID: 'cc72069b-4c62-4cf0-ba33-f14551fae121'
-  PropagateID: 'cc72069b-4c62-4cf0-ba33-f14551fae121'
-  ReservedCode1: '4be2b10b-69e6-483c-923e-534e1984b7ef'
-  ReservedCode2: '4be2b10b-69e6-483c-923e-534e1984b7ef'
----
-
 # CrushExam · 循证备考教练
 
 **把你自己的课件、试卷和笔记，变成一套"先诊断、再补讲、后带练、可复测"的备考流程——先答后查、原答不可覆盖、每个结论有出处。**
@@ -228,7 +217,4 @@ python scripts/coach.py doctor                  # 环境自检
 - 无 Python 执行能力时只能受限对话教学，不能声称状态已保存或判分已运行
 
 ## License
-
-MIT，见 `references/LICENSE`。版本历史见 `references/CHANGELOG.md`。
-
-> AI生成
+MIT
